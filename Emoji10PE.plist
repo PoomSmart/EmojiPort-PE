@@ -1,0 +1,13 @@
+{
+	CoreFoundationVersion = (
+		"1500.00"
+	);
+	Filter = {
+		Executables = (
+			"kbd"
+		);
+		Bundles = (
+			"com.apple.UIKit"
+		);
+	};
+}
