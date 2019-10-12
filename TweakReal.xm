@@ -164,6 +164,10 @@
 
 %end
 
+%end
+
+%group EmojiTokenFix
+
 %hook EMFEmojiToken
 
 %property(assign) int ep_supportsSkinToneVariants;
@@ -212,7 +216,7 @@ void (*EmojiData)(void *, CFURLRef const, CFURLRef const);
 CFURLRef (*copyResourceURLFromFrameworkBundle)(CFStringRef const, CFStringRef const, CFLocaleRef const);
 %hookf(CFURLRef, copyResourceURLFromFrameworkBundle, CFStringRef const resourceName, CFStringRef const resourceType, CFLocaleRef const locale) {
     CFURLRef url = NULL;
-    if (resourceName && resourceType && !CFStringEqual(resourceName, CFSTR("emojimeta")) && (CFStringEqual(resourceType, CFSTR("dat")) || CFStringEqual(resourceType, CFSTR("bitmap")) || CFStringEqual(resourceType, CFSTR("strings"))))
+    if (resourceName && resourceType && (isiOS12_1Up || !CFStringEqual(resourceName, CFSTR("emojimeta"))) && (CFStringEqual(resourceType, CFSTR("dat")) || CFStringEqual(resourceType, CFSTR("bitmap")) || CFStringEqual(resourceType, CFSTR("strings"))))
         url = %orig((__bridge CFStringRef)[(__bridge NSString *)resourceName stringByAppendingString:@"2"], resourceType, locale);
     return url ? url : %orig;
 }
@@ -221,9 +225,6 @@ CFURLRef (*copyResourceURLFromFrameworkBundle)(CFStringRef const, CFStringRef co
 
 %ctor {
     dlopen(realPath2(@"/System/Library/PrivateFrameworks/EmojiFoundation.framework/EmojiFoundation"), RTLD_NOW);
-#if TARGET_OS_SIMULATOR
-    dlopen("/opt/simject/EmojiAttributes.dylib", RTLD_LAZY);
-#endif
     MSImageRef ref = MSGetImageByName(realPath2(@"/System/Library/PrivateFrameworks/CoreEmoji.framework/CoreEmoji"));
     copyResourceURLFromFrameworkBundle = (CFURLRef (*)(CFStringRef const, CFStringRef const, CFLocaleRef const))_PSFindSymbolCallable(ref, "__ZN3CEM34copyResourceURLFromFrameworkBundleEPK10__CFStringS2_PK10__CFLocale");
     NSString *processName = [[NSProcessInfo processInfo] processName];
@@ -232,6 +233,9 @@ CFURLRef (*copyResourceURLFromFrameworkBundle)(CFStringRef const, CFStringRef co
         %init(UIKit);
     }
     %init(EMF);
-    EmojiData = (void (*)(void *, CFURLRef const, CFURLRef const))_PSFindSymbolCallable(ref, "__ZN3CEM9EmojiDataC1EPK7__CFURLS3_");
-    %init(CoreEmoji);
+    if (!isiOS12_1Up) {
+        %init(EmojiTokenFix);
+        EmojiData = (void (*)(void *, CFURLRef const, CFURLRef const))_PSFindSymbolCallable(ref, "__ZN3CEM9EmojiDataC1EPK7__CFURLS3_");
+        %init(CoreEmoji);
+    }
 }

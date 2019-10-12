@@ -1,4 +1,4 @@
-PACKAGE_VERSION = 1.0.2-1
+PACKAGE_VERSION = 1.0.3~b1
 
 ifeq ($(SIMULATOR),1)
 	TARGET = simulator:clang:latest:12.0
@@ -20,6 +20,7 @@ Emoji10PEReal_USE_SUBSTRATE = 1
 include $(THEOS_MAKE_PATH)/library.mk
 
 ifneq ($(SIMULATOR),1)
+
 TWEAK_NAME = Emoji10PE
 Emoji10PE_FILES = Tweak.xm
 
