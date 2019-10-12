@@ -186,7 +186,7 @@
 
 - (BOOL)supportsSkinToneVariants {
     if (self.ep_supportsSkinToneVariants == -1)
-        self.ep_supportsSkinToneVariants = ![[PSEmojiUtilities NoneVariantEmoji] containsObject:self.string] && [PSEmojiUtilities emojiString:[PSEmojiUtilities emojiBaseFirstCharacterString:self.string] inGroup:[PSEmojiUtilities SkinToneEmoji]] ? 1 : 0;
+        self.ep_supportsSkinToneVariants = ![PSEmojiUtilities isNoneVariantEmoji:self.string] && [PSEmojiUtilities isSkinToneEmoji:[PSEmojiUtilities emojiBaseFirstCharacterString:self.string]] ? 1 : 0;
     return self.ep_supportsSkinToneVariants == 1;
 }
 
@@ -213,6 +213,10 @@ void (*EmojiData)(void *, CFURLRef const, CFURLRef const);
     *count = CFArrayGetCount(*data);
 }
 
+%end
+
+%group CoreEmoji_Bundle
+
 CFURLRef (*copyResourceURLFromFrameworkBundle)(CFStringRef const, CFStringRef const, CFLocaleRef const);
 %hookf(CFURLRef, copyResourceURLFromFrameworkBundle, CFStringRef const resourceName, CFStringRef const resourceType, CFLocaleRef const locale) {
     CFURLRef url = NULL;
@@ -233,6 +237,7 @@ CFURLRef (*copyResourceURLFromFrameworkBundle)(CFStringRef const, CFStringRef co
         %init(UIKit);
     }
     %init(EMF);
+    %init(CoreEmoji_Bundle);
     if (!isiOS12_1Up) {
         %init(EmojiTokenFix);
         EmojiData = (void (*)(void *, CFURLRef const, CFURLRef const))_PSFindSymbolCallable(ref, "__ZN3CEM9EmojiDataC1EPK7__CFURLS3_");
