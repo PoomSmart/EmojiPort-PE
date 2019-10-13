@@ -3,13 +3,16 @@
 #import "../EmojiLibrary/Header.h"
 #import "../libsubstitrate/substitrate.h"
 
+BOOL isCoupleEmoji(NSString *emojiString) {
+    return [[PSEmojiUtilities CoupleMultiSkinToneEmoji] indexOfObject:emojiString] != NSNotFound;
+}
+
 %hook EMFEmojiToken
 
 // FF, MM, FM
 
 - (BOOL)supportsSkinToneVariants {
-    NSString *emojiString = self.string;
-    return [[PSEmojiUtilities CoupleMultiSkinToneEmoji] indexOfObject:emojiString] != NSNotFound ? YES : %orig;
+    return isCoupleEmoji(self.string) ? YES : %orig;
 }
 
 - (NSArray <NSString *> *)_skinToneVariantStrings {
@@ -53,8 +56,10 @@
 
 %hook UIKBRenderFactory
 
-- (void)modifyTraitsForDividerVariant:(id)variant withKey:(id)key {
-    return;
+- (void)modifyTraitsForDividerVariant:(id)variant withKey:(UIKBTree *)key {
+    if (isCoupleEmoji(key.displayString))
+        return;
+    %orig;
 }
 
 %end
@@ -62,7 +67,7 @@
 %hook UIKBRenderFactoryiPad
 
 - (NSInteger)rowLimitForKey:(UIKBTree *)tree {
-    if ([tree.name isEqualToString:@"EmojiPopupKey"])
+    if ([tree.name isEqualToString:@"EmojiPopupKey"] && isCoupleEmoji(tree.displayString))
         return 6;
     return %orig;
 }
@@ -73,7 +78,7 @@
 
 - (UIKBTree *)subTreeHitTest:(CGPoint)point {
     UIKBTree *tree = %orig;
-    if ([[PSEmojiUtilities CoupleMultiSkinToneEmoji] indexOfObject:tree.displayString] != NSNotFound)
+    if (isCoupleEmoji(tree.displayString))
         [tree.subtrees removeObjectAtIndex:1];
     return tree;
 }
@@ -82,7 +87,7 @@
 
 void (*_UIKBRectsInit_Wildcat)(void *, id, UIKBTree *, id);
 void UIKBRectsInit_Wildcat(void *arg0, id arg1, UIKBTree *key, id state) {
-    BOOL isEmoji = [key.name isEqualToString:@"EmojiPopupKey"];
+    BOOL isEmoji = [key.name isEqualToString:@"EmojiPopupKey"] && isCoupleEmoji(key.displayString);
     if (isEmoji)
         key.name = @"EmojiPopupKey2";
     _UIKBRectsInit_Wildcat(arg0, arg1, key, state);
