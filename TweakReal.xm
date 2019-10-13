@@ -1,7 +1,6 @@
 #import "../PS.h"
 #import "../EmojiLibrary/PSEmojiUtilities.h"
 #import "../EmojiLibrary/Header.h"
-#import "../EmojiLibrary/Emojis.h"
 
 %config(generator=MobileSubstrate)
 
@@ -194,27 +193,6 @@
 
 %end
 
-%group CoreEmoji
-
-void (*EmojiData)(void *, CFURLRef const, CFURLRef const);
-%hookf(void, EmojiData, void *arg0, CFURLRef const datPath, CFURLRef const metaDatPath) {
-    %orig(arg0, datPath, metaDatPath);
-    CFMutableArrayRef *data = (CFMutableArrayRef *)((uintptr_t)arg0 + 0x28);
-    int *count = (int *)((uintptr_t)arg0 + 0x32);
-    CFArrayRemoveAllValues(*data);
-    for (NSString *emoji in Emoji_Data) {
-        CFStringRef cfEmoji = CFStringCreateWithCString(kCFAllocatorDefault, [emoji UTF8String], kCFStringEncodingUTF8);
-        if (cfEmoji != NULL) {
-            CFArrayAppendValue(*data, cfEmoji);
-            CFRelease(cfEmoji);
-        }
-    }
-    [Emoji_Data autorelease];
-    *count = CFArrayGetCount(*data);
-}
-
-%end
-
 %group CoreEmoji_Bundle
 
 CFURLRef (*copyResourceURLFromFrameworkBundle)(CFStringRef const, CFStringRef const, CFLocaleRef const);
@@ -240,7 +218,5 @@ CFURLRef (*copyResourceURLFromFrameworkBundle)(CFStringRef const, CFStringRef co
     %init(CoreEmoji_Bundle);
     if (!isiOS12_1Up) {
         %init(EmojiTokenFix);
-        EmojiData = (void (*)(void *, CFURLRef const, CFURLRef const))_PSFindSymbolCallable(ref, "__ZN3CEM9EmojiDataC1EPK7__CFURLS3_");
-        %init(CoreEmoji);
     }
 }
