@@ -161,6 +161,18 @@
     return [PSEmojiUtilities emojiBaseString:emojiString];
 }
 
++ (BOOL)_genderEmojiBaseStringNeedVariantSelector:(NSString *)emojiBaseString {
+    return [PSEmojiUtilities genderEmojiBaseStringNeedVariantSelector:emojiBaseString];
+}
+
++ (BOOL)_hasSkinToneVariantsForString:(NSString *)emojiString {
+    return [PSEmojiUtilities hasSkinToneVariants:emojiString];
+}
+
++ (NSArray <NSString *> *)_skinToneVariantsForString:(NSString *)emojiString {
+    return [PSEmojiUtilities skinToneVariants:emojiString withSelf:YES];
+}
+
 %end
 
 %end
@@ -185,7 +197,7 @@
 
 - (BOOL)supportsSkinToneVariants {
     if (self.ep_supportsSkinToneVariants == -1)
-        self.ep_supportsSkinToneVariants = ![PSEmojiUtilities isNoneVariantEmoji:self.string] && [PSEmojiUtilities isSkinToneEmoji:[PSEmojiUtilities emojiBaseFirstCharacterString:self.string]] ? 1 : 0;
+        self.ep_supportsSkinToneVariants = ![PSEmojiUtilities isNoneVariantEmoji:self.string] && [PSEmojiUtilities hasSkinToneVariants:self.string] ? 1 : 0;
     return self.ep_supportsSkinToneVariants == 1;
 }
 
