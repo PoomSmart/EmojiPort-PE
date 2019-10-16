@@ -12,32 +12,8 @@
 
 %hook UIKeyboardEmojiCategory
 
-+ (NSArray <NSString *> *)DingbatVariantsEmoji {
-    return [PSEmojiUtilities DingbatVariantsEmoji];
-}
-
-+ (NSArray <NSString *> *)NoneVariantEmoji {
-    return [PSEmojiUtilities NoneVariantEmoji];
-}
-
-+ (NSArray <NSString *> *)SkinToneEmoji {
-    return [PSEmojiUtilities SkinToneEmoji];
-}
-
-+ (NSArray <NSString *> *)GenderEmoji {
-    return [PSEmojiUtilities GenderEmoji];
-}
-
-+ (BOOL)emojiString:(NSString *)emojiString inGroup:(NSArray <NSString *> *)group {
-    return [PSEmojiUtilities emojiString:emojiString inGroup:group];
-}
-
 + (NSUInteger)hasVariantsForEmoji:(NSString *)emojiString {
     return [PSEmojiUtilities hasVariantsForEmoji:emojiString];
-}
-
-+ (NSArray <NSString *> *)ProfessionEmoji {
-    return [PSEmojiUtilities ProfessionEmoji];
 }
 
 + (NSString *)professionSkinToneEmojiBaseKey:(NSString *)emojiString {
