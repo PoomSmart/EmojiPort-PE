@@ -6,39 +6,19 @@ BOOL overrideSkinTone = YES;
 
 %hook EMFEmojiToken
 
-// FF, MM, FM
-
 - (BOOL)supportsSkinToneVariants {
     return overrideSkinTone && [PSEmojiUtilities isCoupleMultiSkinToneEmoji:self.string] ? YES : %orig;
 }
 
 - (NSArray <NSString *> *)_skinToneVariantStrings {
     NSString *emojiString = self.string;
-    NSUInteger type = [[PSEmojiUtilities CoupleMultiSkinToneEmoji] indexOfObject:emojiString];
-    if (type != NSNotFound) {
-        NSMutableArray *variants = [NSMutableArray array];
-        BOOL first = YES;
-        BOOL ipad = IS_IPAD;
-        for (NSString *leftSkin in [PSEmojiUtilities skinModifiers]) {
-            if (first || ipad)
-                [variants addObject:first ? emojiString : @""];
-            first = NO;
-            for (NSString *rightSkin in [PSEmojiUtilities skinModifiers]) {
-                switch (type) {
-                    case 0:
-                        [variants addObject:[NSString stringWithFormat:@"👩%@‍🤝‍👩%@", leftSkin, rightSkin]];
-                        break;
-                    case 1:
-                        [variants addObject:[NSString stringWithFormat:@"👨%@‍🤝‍👨%@", leftSkin, rightSkin]];
-                        break;
-                    case 2:
-                        [variants addObject:[NSString stringWithFormat:@"👩%@‍🤝‍👨%@", leftSkin, rightSkin]];
-                        break;
-                }
-            }
-        }
-        if (!ipad)
+    NSMutableArray *variants = [PSEmojiUtilities coupleSkinToneVariants:emojiString];
+    if (variants) {
+        if (!IS_IPAD)
             return variants;
+        for (int i = 20; i > 0; i -= 5)
+            [variants insertObject:@"" atIndex:i];
+        [variants insertObject:emojiString atIndex:0];
         NSMutableArray *trueVariants = [NSMutableArray array];
         for (NSInteger index = 0; index < 30; ++index) {
             NSInteger insertIndex = ((index % 5) * 6) + (index / 5);
