@@ -2,12 +2,14 @@
 #import "../EmojiLibrary/PSEmojiUtilities.h"
 #import "../EmojiLibrary/Header.h"
 
+BOOL overrideSkinTone = YES;
+
 %hook EMFEmojiToken
 
 // FF, MM, FM
 
 - (BOOL)supportsSkinToneVariants {
-    return [PSEmojiUtilities isCoupleMultiSkinToneEmoji:self.string] ? YES : %orig;
+    return overrideSkinTone && [PSEmojiUtilities isCoupleMultiSkinToneEmoji:self.string] ? YES : %orig;
 }
 
 - (NSArray <NSString *> *)_skinToneVariantStrings {
@@ -70,6 +72,13 @@
 %end
 
 %hook UIKeyboardEmojiCollectionInputView
+
+- (NSInteger)didInputSubTree:(id)arg1 {
+    overrideSkinTone = NO;
+    NSInteger orig = %orig;
+    overrideSkinTone = YES;
+    return orig;
+}
 
 - (UIKBTree *)subTreeHitTest:(CGPoint)point {
     UIKBTree *tree = %orig;
