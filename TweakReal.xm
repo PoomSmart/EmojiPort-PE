@@ -4,10 +4,6 @@
 
 %config(generator=MobileSubstrate)
 
-@interface EMFEmojiToken (EmojiPort)
-@property(assign) int ep_supportsSkinToneVariants;
-@end
-
 %group UIKit
 
 %hook UIKeyboardEmojiCategory
@@ -153,41 +149,15 @@
 
 %end
 
-%group EmojiTokenFix
-
-%hook EMFEmojiToken
-
-%property(assign) int ep_supportsSkinToneVariants;
-
-- (id)initWithCEMEmojiToken:(void *)arg0 {
-    self = %orig;
-    self.ep_supportsSkinToneVariants = -1;
-    return self;
-}
-
-- (id)initWithString:(NSString *)string localeIdentifier:(NSString *)localeIdentifier {
-    self = %orig;
-    self.ep_supportsSkinToneVariants = -1;
-    return self;
-}
-
-- (BOOL)supportsSkinToneVariants {
-    if (self.ep_supportsSkinToneVariants == -1)
-        self.ep_supportsSkinToneVariants = ![PSEmojiUtilities isNoneVariantEmoji:self.string] && [PSEmojiUtilities hasSkinToneVariants:self.string] ? 1 : 0;
-    return self.ep_supportsSkinToneVariants == 1;
-}
-
-%end
-
-%end
-
 %group CoreEmoji_Bundle
 
 CFURLRef (*copyResourceURLFromFrameworkBundle)(CFStringRef const, CFStringRef const, CFLocaleRef const);
 %hookf(CFURLRef, copyResourceURLFromFrameworkBundle, CFStringRef const resourceName, CFStringRef const resourceType, CFLocaleRef const locale) {
     CFURLRef url = NULL;
-    if (resourceName && resourceType && (isiOS12_1Up || !CFStringEqual(resourceName, CFSTR("emojimeta"))) && (CFStringEqual(resourceType, CFSTR("dat")) || CFStringEqual(resourceType, CFSTR("bitmap")) || CFStringEqual(resourceType, CFSTR("strings"))))
-        url = %orig((__bridge CFStringRef)[(__bridge NSString *)resourceName stringByAppendingString:@"2"], resourceType, locale);
+    if (resourceName && resourceType && (CFStringEqual(resourceType, CFSTR("dat")) || CFStringEqual(resourceType, CFSTR("bitmap")) || CFStringEqual(resourceType, CFSTR("strings")))) {
+        CFStringRef newResourceName = CFStringEqual(resourceName, CFSTR("emojimeta")) ? (isiOS12_1Up ? CFSTR("emojimeta_modern") : CFSTR("emojimeta_legacy")) : (__bridge CFStringRef)[(__bridge NSString *)resourceName stringByAppendingString:@"2"];
+        url = %orig(newResourceName, resourceType, locale);
+    }
     return url ? url : %orig;
 }
 
@@ -204,7 +174,4 @@ CFURLRef (*copyResourceURLFromFrameworkBundle)(CFStringRef const, CFStringRef co
     }
     %init(EMF);
     %init(CoreEmoji_Bundle);
-    if (!isiOS12_1Up) {
-        %init(EmojiTokenFix);
-    }
 }
