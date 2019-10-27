@@ -1,4 +1,4 @@
-PACKAGE_VERSION = 1.0.3~b10
+PACKAGE_VERSION = 1.0.4-2
 
 ifeq ($(SIMULATOR),1)
 	TARGET = simulator:clang:latest:12.0
@@ -12,7 +12,7 @@ include $(THEOS)/makefiles/common.mk
 
 LIBRARY_NAME = EmojiPortPEReal
 EmojiPortPEReal_FILES = TweakReal.xm FamilyPicker.xm
-EmojiPortPEReal_INSTALL_PATH = /Library/MobileSubstrate/DynamicLibraries/EmojiPortPE
+EmojiPortPEReal_INSTALL_PATH = /Library/MobileSubstrate/DynamicLibraries/EmojiPort
 EmojiPortPEReal_EXTRA_FRAMEWORKS = CydiaSubstrate
 EmojiPortPEReal_LIBRARIES = EmojiLibrary
 EmojiPortPEReal_USE_SUBSTRATE = 1

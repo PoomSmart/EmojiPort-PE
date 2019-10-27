@@ -80,6 +80,8 @@ void (*UIKBRectsInit_Wildcat)(void *, id, UIKBTree *, id);
 }
 
 %ctor {
+    if (isiOS13_2Up)
+        return;
     dlopen(realPath2(@"/System/Library/PrivateFrameworks/EmojiFoundation.framework/EmojiFoundation"), RTLD_NOW);
     MSImageRef ref = MSGetImageByName(isiOS12Up ? "/System/Library/PrivateFrameworks/UIKitCore.framework/UIKitCore" : "/System/Library/Frameworks/UIKit.framework/UIKit");
     UIKBRectsInit_Wildcat = (void (*)(void *, id, UIKBTree *, id))_PSFindSymbolCallable(ref, "_UIKBRectsInit_Wildcat");

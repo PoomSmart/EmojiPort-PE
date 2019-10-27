@@ -88,6 +88,18 @@
     return [PSEmojiUtilities ProfessionEmoji];
 }
 
++ (NSArray <NSString *> *)ProfessionWithoutSkinToneEmoji {
+    return [PSEmojiUtilities ProfessionWithoutSkinToneEmoji];
+}
+
++ (NSArray <NSString *> *)CoupleMultiSkinToneEmoji {
+    return [PSEmojiUtilities CoupleMultiSkinToneEmoji];
+}
+
++ (NSArray <NSString *> *)MultiPersonFamilySkinToneEmoji {
+    return [PSEmojiUtilities MultiPersonFamilySkinToneEmoji];
+}
+
 + (NSArray <NSString *> *)computeEmojiFlagsSortedByLanguage {
     return [PSEmojiUtilities FlagsEmoji];
 }
