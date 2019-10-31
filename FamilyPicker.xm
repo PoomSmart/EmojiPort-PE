@@ -14,8 +14,10 @@ BOOL overrideSkinTone = YES;
     NSString *emojiString = self.string;
     NSMutableArray *variants = [PSEmojiUtilities coupleSkinToneVariants:emojiString];
     if (variants) {
-        if (!IS_IPAD)
+        if (!IS_IPAD) {
+            [variants insertObject:emojiString atIndex:0];
             return variants;
+        }
         for (int i = 20; i > 0; i -= 5)
             [variants insertObject:@"" atIndex:i];
         [variants insertObject:emojiString atIndex:0];
