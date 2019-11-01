@@ -167,8 +167,14 @@ CFURLRef (*copyResourceURLFromFrameworkBundle)(CFStringRef const, CFStringRef co
 %hookf(CFURLRef, copyResourceURLFromFrameworkBundle, CFStringRef const resourceName, CFStringRef const resourceType, CFLocaleRef const locale) {
     CFURLRef url = NULL;
     if (resourceName && resourceType && (CFStringEqual(resourceType, CFSTR("dat")) || CFStringEqual(resourceType, CFSTR("bitmap")) || CFStringEqual(resourceType, CFSTR("strings")))) {
-        CFStringRef newResourceName = CFStringEqual(resourceName, CFSTR("emojimeta")) ? (isiOS12_1Up ? CFSTR("emojimeta_modern") : CFSTR("emojimeta_legacy")) : (__bridge CFStringRef)[(__bridge NSString *)resourceName stringByAppendingString:@"2"];
-        url = %orig(newResourceName, resourceType, locale);
+        CFMutableStringRef newResourceName = NULL;
+        if (!CFStringEqual(resourceName, CFSTR("emojimeta"))) {
+            newResourceName = CFStringCreateMutableCopy(kCFAllocatorDefault, CFStringGetLength(resourceName), resourceName);
+            CFStringAppend(newResourceName, CFSTR("2"));
+        }
+        url = %orig(newResourceName ? newResourceName : (isiOS12_1Up ? CFSTR("emojimeta_modern") : CFSTR("emojimeta_legacy")), resourceType, locale);
+        if (newResourceName)
+            CFRelease(newResourceName);
     }
     return url ? url : %orig;
 }

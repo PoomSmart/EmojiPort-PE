@@ -2,7 +2,7 @@
 #import "../EmojiLibrary/PSEmojiUtilities.h"
 #import "../EmojiLibrary/Header.h"
 
-BOOL overrideSkinTone = YES;
+BOOL overrideSkinTone = NO;
 
 %hook EMFEmojiToken
 
@@ -55,15 +55,10 @@ BOOL overrideSkinTone = YES;
 
 %hook UIKeyboardEmojiCollectionInputView
 
-- (NSInteger)didInputSubTree:(id)arg1 {
-    overrideSkinTone = NO;
-    NSInteger orig = %orig;
-    overrideSkinTone = YES;
-    return orig;
-}
-
 - (UIKBTree *)subTreeHitTest:(CGPoint)point {
+    overrideSkinTone = YES;
     UIKBTree *tree = %orig;
+    overrideSkinTone = NO;
     if ([PSEmojiUtilities isCoupleMultiSkinToneEmoji:tree.displayString])
         [tree.subtrees removeObjectAtIndex:1];
     return tree;
