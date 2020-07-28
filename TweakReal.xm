@@ -157,6 +157,23 @@
     return [PSEmojiUtilities skinToneVariants:emojiString withSelf:YES];
 }
 
++ (NSArray <NSArray <NSString *> *> *)_skinToneChooserVariantsForMultiPersonType:(NSInteger)type {
+    if (type == PSEmojiMultiPersonTypeNN)
+        return [PSEmojiUtilities skinToneChooserVariantsForNeutralMultiPersonType];
+    return %orig;
+}
+
++ (NSString *)_multiPersonStringForString:(NSString *)string skinToneVariantSpecifier:(NSArray <NSString *> *)specifier {
+    NSString *value = %orig;
+    if (value == nil && [PSEmojiUtilities multiPersonTypeForString:string] == PSEmojiMultiPersonTypeNN)
+        return [PSEmojiUtilities multiPersonStringForNeutralStringWithSkinToneVariantSpecifier:specifier];
+    return value;
+}
+
++ (PSEmojiMultiPersonType)multiPersonTypeForString:(NSString *)string {
+    return [PSEmojiUtilities multiPersonTypeForString:string];
+}
+
 %end
 
 %end
