@@ -1,6 +1,6 @@
 {
 	CoreFoundationVersion = (
-		"1500.00"
+		1500.00
 	);
 	Filter = {
 		Executables = (
