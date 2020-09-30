@@ -183,7 +183,11 @@
 CFURLRef (*copyResourceURLFromFrameworkBundle)(CFStringRef const, CFStringRef const, CFLocaleRef const);
 %hookf(CFURLRef, copyResourceURLFromFrameworkBundle, CFStringRef const resourceName, CFStringRef const resourceType, CFLocaleRef const locale) {
     CFURLRef url = NULL;
-    if (resourceName && resourceType && (CFStringEqual(resourceType, CFSTR("dat")) || CFStringEqual(resourceType, CFSTR("bitmap")) || CFStringEqual(resourceType, CFSTR("strings")))) {
+    if (resourceName && resourceType && (
+        CFStringEqual(resourceType, CFSTR("dat"))
+            || CFStringEqual(resourceType, CFSTR("bitmap"))
+            || CFStringEqual(resourceType, CFSTR("strings"))
+            || CFStringEqual(resourceType, CFSTR("stringsdict")))) {
         CFMutableStringRef newResourceName = NULL;
         if (!CFStringEqual(resourceName, CFSTR("emojimeta"))) {
             newResourceName = CFStringCreateMutableCopy(kCFAllocatorDefault, CFStringGetLength(resourceName), resourceName);
