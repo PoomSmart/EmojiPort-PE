@@ -180,14 +180,16 @@
 
 %group CoreEmoji_Bundle
 
-CFURLRef (*copyResourceURLFromFrameworkBundle)(CFStringRef const, CFStringRef const, CFLocaleRef const);
-%hookf(CFURLRef, copyResourceURLFromFrameworkBundle, CFStringRef const resourceName, CFStringRef const resourceType, CFLocaleRef const locale) {
+CFURLRef (*copyResourceURLFromFrameworkBundle)(CFStringRef const, CFStringRef const, CFStringRef const);
+%hookf(CFURLRef, copyResourceURLFromFrameworkBundle, CFStringRef const resourceName, CFStringRef const resourceType, CFStringRef const locale) {
     CFURLRef url = NULL;
-    if (resourceName && resourceType && (
-        CFStringEqual(resourceType, CFSTR("dat"))
+    BOOL gate = resourceName && resourceType;
+    BOOL byExtension = CFStringEqual(resourceType, CFSTR("dat"))
             || CFStringEqual(resourceType, CFSTR("bitmap"))
             || CFStringEqual(resourceType, CFSTR("strings"))
-            || CFStringEqual(resourceType, CFSTR("stringsdict")))) {
+            || CFStringEqual(resourceType, CFSTR("stringsdict"));
+    BOOL byFolder = gate && locale && (CFStringEqual(locale, CFSTR("SearchEngineOverrideLists")) || CFStringEqual(locale, CFSTR("SearchModel-en")));
+    if (gate && (byExtension || byFolder)) {
         CFMutableStringRef newResourceName = NULL;
         if (!CFStringEqual(resourceName, CFSTR("emojimeta"))) {
             newResourceName = CFStringCreateMutableCopy(kCFAllocatorDefault, CFStringGetLength(resourceName), resourceName);
@@ -205,7 +207,7 @@ CFURLRef (*copyResourceURLFromFrameworkBundle)(CFStringRef const, CFStringRef co
 %ctor {
     dlopen(realPath2(@"/System/Library/PrivateFrameworks/EmojiFoundation.framework/EmojiFoundation"), RTLD_NOW);
     MSImageRef ref = MSGetImageByName(realPath2(@"/System/Library/PrivateFrameworks/CoreEmoji.framework/CoreEmoji"));
-    copyResourceURLFromFrameworkBundle = (CFURLRef (*)(CFStringRef const, CFStringRef const, CFLocaleRef const))_PSFindSymbolCallable(ref, "__ZN3CEM34copyResourceURLFromFrameworkBundleEPK10__CFStringS2_PK10__CFLocale");
+    copyResourceURLFromFrameworkBundle = (CFURLRef (*)(CFStringRef const, CFStringRef const, CFStringRef const))_PSFindSymbolCallable(ref, "__ZN3CEM34copyResourceURLFromFrameworkBundleEPK10__CFStringS2_PK10__CFLocale");
     NSString *processName = [[NSProcessInfo processInfo] processName];
     BOOL kbd = stringEqual(processName, @"kbd");
     if (!kbd) {
