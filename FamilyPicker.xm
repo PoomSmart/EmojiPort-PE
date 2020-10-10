@@ -77,7 +77,7 @@ void (*UIKBRectsInit_Wildcat)(void *, id, UIKBTree *, id);
 }
 
 %ctor {
-    if (isiOS13_2Up)
+    if (IS_IOS_OR_NEWER(iOS_13_2))
         return;
     dlopen(realPath2(@"/System/Library/PrivateFrameworks/EmojiFoundation.framework/EmojiFoundation"), RTLD_NOW);
     MSImageRef ref = MSGetImageByName(isiOS12Up ? "/System/Library/PrivateFrameworks/UIKitCore.framework/UIKitCore" : "/System/Library/Frameworks/UIKit.framework/UIKit");
