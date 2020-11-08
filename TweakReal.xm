@@ -178,27 +178,49 @@
 
 %end
 
-%group CoreEmoji_Bundle
-
-CFURLRef (*copyResourceURLFromFrameworkBundle)(CFStringRef const, CFStringRef const, CFStringRef const);
-%hookf(CFURLRef, copyResourceURLFromFrameworkBundle, CFStringRef const resourceName, CFStringRef const resourceType, CFStringRef const locale) {
-    CFURLRef url = NULL;
+static CFStringRef overrideResourceName(CFStringRef const resourceName, CFStringRef const resourceType, CFStringRef const folder) {
+    CFMutableStringRef newResourceName = NULL;
     BOOL gate = resourceName && resourceType;
     BOOL byExtension = CFStringEqual(resourceType, CFSTR("dat"))
             || CFStringEqual(resourceType, CFSTR("bitmap"))
             || CFStringEqual(resourceType, CFSTR("strings"))
             || CFStringEqual(resourceType, CFSTR("stringsdict"));
-    BOOL byFolder = gate && locale && (CFStringEqual(locale, CFSTR("SearchEngineOverrideLists")) || CFStringEqual(locale, CFSTR("SearchModel-en")));
-    if (gate && (byExtension || byFolder)) {
-        CFMutableStringRef newResourceName = NULL;
+    BOOL byName = CFStringEqual(resourceName, CFSTR("term_index"))
+        || CFStringEqual(resourceName, CFSTR("vocabulary"))
+        || CFStringEqual(resourceName, CFSTR("term_index_stemmed"))
+        || CFStringEqual(resourceName, CFSTR("document_index"))
+        || CFStringEqual(resourceName, CFSTR("document_index_stemmed"));
+    BOOL byFolder = gate && folder && (CFStringEqual(folder, CFSTR("SearchEngineOverrideLists")) || CFStringEqual(folder, CFSTR("SearchModel-en")));
+    if (gate && (byName || byExtension || byFolder)) {
         if (!CFStringEqual(resourceName, CFSTR("emojimeta"))) {
             newResourceName = CFStringCreateMutableCopy(kCFAllocatorDefault, CFStringGetLength(resourceName), resourceName);
             CFStringAppend(newResourceName, CFSTR("2"));
         }
-        url = %orig(newResourceName ? newResourceName : (isiOS12_1Up ? CFSTR("emojimeta_modern") : CFSTR("emojimeta_legacy")), resourceType, locale);
-        if (newResourceName)
-            CFRelease(newResourceName);
     }
+    return newResourceName ?: resourceName;
+}
+
+%group CoreEmoji_Bundle
+
+CFURLRef (*copyResourceURLFromFrameworkBundle)(CFStringRef const, CFStringRef const, CFLocaleRef const);
+%hookf(CFURLRef, copyResourceURLFromFrameworkBundle, CFStringRef const resourceName, CFStringRef const resourceType, CFLocaleRef const locale) {
+    CFStringRef newResourceName = overrideResourceName(resourceName, resourceType, NULL);
+    CFURLRef url = %orig(newResourceName, resourceType, locale);
+    if (resourceName != newResourceName && newResourceName)
+        CFRelease(newResourceName);
+    return url ? url : %orig;
+}
+
+%end
+
+%group CoreEmoji_Bundle2
+
+CFURLRef (*copyResourceURLFromFrameworkBundle2)(CFStringRef const, CFStringRef const, CFStringRef const, CFLocaleRef const);
+%hookf(CFURLRef, copyResourceURLFromFrameworkBundle2, CFStringRef const resourceName, CFStringRef const resourceType, CFStringRef const folder, CFStringRef const locale) {
+    CFStringRef newResourceName = overrideResourceName(resourceName, resourceType, folder);
+    CFURLRef url = %orig(newResourceName, resourceType, folder, locale);
+    if (newResourceName)
+        CFRelease(newResourceName);
     return url ? url : %orig;
 }
 
@@ -207,12 +229,18 @@ CFURLRef (*copyResourceURLFromFrameworkBundle)(CFStringRef const, CFStringRef co
 %ctor {
     dlopen(realPath2(@"/System/Library/PrivateFrameworks/EmojiFoundation.framework/EmojiFoundation"), RTLD_NOW);
     MSImageRef ref = MSGetImageByName(realPath2(@"/System/Library/PrivateFrameworks/CoreEmoji.framework/CoreEmoji"));
-    copyResourceURLFromFrameworkBundle = (CFURLRef (*)(CFStringRef const, CFStringRef const, CFStringRef const))_PSFindSymbolCallable(ref, "__ZN3CEM34copyResourceURLFromFrameworkBundleEPK10__CFStringS2_PK10__CFLocale");
+    copyResourceURLFromFrameworkBundle = (CFURLRef (*)(CFStringRef const, CFStringRef const, CFLocaleRef const))_PSFindSymbolCallable(ref, "__ZN3CEM34copyResourceURLFromFrameworkBundleEPK10__CFStringS2_PK10__CFLocale");
+    if (copyResourceURLFromFrameworkBundle) {
+        %init(CoreEmoji_Bundle);
+    }
+    copyResourceURLFromFrameworkBundle2 = (CFURLRef (*)(CFStringRef const, CFStringRef const, CFStringRef const, CFLocaleRef const))_PSFindSymbolCallable(ref, "__ZN3CEM34copyResourceURLFromFrameworkBundleEPK10__CFStringS2_S2_PK10__CFLocale");
+    if (copyResourceURLFromFrameworkBundle2) {
+        %init(CoreEmoji_Bundle2);
+    }
     NSString *processName = [[NSProcessInfo processInfo] processName];
     BOOL kbd = stringEqual(processName, @"kbd");
     if (!kbd) {
         %init(UIKit);
     }
     %init(EMF);
-    %init(CoreEmoji_Bundle);
 }

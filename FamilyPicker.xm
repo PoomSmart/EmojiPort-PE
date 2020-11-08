@@ -14,7 +14,7 @@ BOOL overrideSkinTone = NO;
     NSString *emojiString = self.string;
     NSMutableArray *variants = [PSEmojiUtilities coupleSkinToneVariants:emojiString];
     if (variants) {
-        if (!IS_IPAD) {
+        if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
             [variants insertObject:emojiString atIndex:0];
             return variants;
         }
