@@ -34,6 +34,22 @@
 
 %group EMF
 
+%hook NSBundle
+
+- (NSURL *)URLForResource:(NSString *)resourceName withExtension:(NSString *)extension {
+    if (stringEqual(resourceName, @"document_index")
+        || stringEqual(resourceName, @"term_index")
+        || stringEqual(resourceName, @"document_index_stemmed")
+        || stringEqual(resourceName, @"term_index_stemmed")
+        || stringEqual(resourceName, @"vocabulary")) {
+            NSURL *url = %orig([resourceName stringByAppendingString:@"2"], extension);
+            if (url) return url;
+        }
+    return %orig(resourceName, extension);
+}
+
+%end
+
 %hook EMFEmojiCategory
 
 + (NSArray <NSString *> *)PeopleEmoji {
@@ -178,26 +194,26 @@
 
 %end
 
+static BOOL freeFlag = NO;
 static CFStringRef overrideResourceName(CFStringRef const resourceName, CFStringRef const resourceType, CFStringRef const folder) {
-    CFMutableStringRef newResourceName = NULL;
+    CFMutableStringRef newResourceName = (CFMutableStringRef)resourceName;
     BOOL gate = resourceName && resourceType;
     BOOL byExtension = CFStringEqual(resourceType, CFSTR("dat"))
             || CFStringEqual(resourceType, CFSTR("bitmap"))
             || CFStringEqual(resourceType, CFSTR("strings"))
             || CFStringEqual(resourceType, CFSTR("stringsdict"));
-    BOOL byName = CFStringEqual(resourceName, CFSTR("term_index"))
-        || CFStringEqual(resourceName, CFSTR("vocabulary"))
-        || CFStringEqual(resourceName, CFSTR("term_index_stemmed"))
-        || CFStringEqual(resourceName, CFSTR("document_index"))
-        || CFStringEqual(resourceName, CFSTR("document_index_stemmed"));
+    BOOL byName = CFStringEqual(resourceName, CFSTR("term_index"));
     BOOL byFolder = gate && folder && (CFStringEqual(folder, CFSTR("SearchEngineOverrideLists")) || CFStringEqual(folder, CFSTR("SearchModel-en")));
+    freeFlag = NO;
     if (gate && (byName || byExtension || byFolder)) {
         if (!CFStringEqual(resourceName, CFSTR("emojimeta"))) {
             newResourceName = CFStringCreateMutableCopy(kCFAllocatorDefault, CFStringGetLength(resourceName), resourceName);
             CFStringAppend(newResourceName, CFSTR("2"));
-        }
+            freeFlag = YES;
+        } else
+            newResourceName = (CFMutableStringRef)CFSTR("emojimeta_modern");
     }
-    return newResourceName ?: resourceName;
+    return newResourceName;
 }
 
 %group CoreEmoji_Bundle
@@ -206,7 +222,7 @@ CFURLRef (*copyResourceURLFromFrameworkBundle)(CFStringRef const, CFStringRef co
 %hookf(CFURLRef, copyResourceURLFromFrameworkBundle, CFStringRef const resourceName, CFStringRef const resourceType, CFLocaleRef const locale) {
     CFStringRef newResourceName = overrideResourceName(resourceName, resourceType, NULL);
     CFURLRef url = %orig(newResourceName, resourceType, locale);
-    if (resourceName != newResourceName && newResourceName)
+    if (freeFlag && newResourceName)
         CFRelease(newResourceName);
     return url ? url : %orig;
 }
@@ -219,7 +235,7 @@ CFURLRef (*copyResourceURLFromFrameworkBundle2)(CFStringRef const, CFStringRef c
 %hookf(CFURLRef, copyResourceURLFromFrameworkBundle2, CFStringRef const resourceName, CFStringRef const resourceType, CFStringRef const folder, CFStringRef const locale) {
     CFStringRef newResourceName = overrideResourceName(resourceName, resourceType, folder);
     CFURLRef url = %orig(newResourceName, resourceType, folder, locale);
-    if (newResourceName)
+    if (freeFlag && newResourceName)
         CFRelease(newResourceName);
     return url ? url : %orig;
 }
