@@ -211,7 +211,7 @@ static CFStringRef overrideResourceName(CFStringRef const resourceName, CFString
             CFStringAppend(newResourceName, CFSTR("2"));
             freeFlag = YES;
         } else
-            newResourceName = (CFMutableStringRef)CFSTR("emojimeta_modern");
+            newResourceName = (CFMutableStringRef)(IS_IOS_OR_NEWER(iOS_12_1) ? CFSTR("emojimeta_modern") : CFSTR("emojimeta_legacy"));
     }
     return newResourceName;
 }
