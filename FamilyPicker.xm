@@ -1,6 +1,7 @@
 #import "../PS.h"
 #import "../EmojiLibrary/PSEmojiUtilities.h"
 #import "../EmojiLibrary/Header.h"
+#import <theos/IOSMacros.h>
 
 BOOL overrideSkinTone = NO;
 
@@ -14,7 +15,7 @@ BOOL overrideSkinTone = NO;
     NSString *emojiString = self.string;
     NSMutableArray *variants = [PSEmojiUtilities coupleSkinToneVariants:emojiString];
     if (variants) {
-        if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
+        if (!IS_IPAD) {
             [variants insertObject:emojiString atIndex:0];
             return variants;
         }

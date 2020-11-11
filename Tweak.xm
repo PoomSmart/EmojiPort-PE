@@ -5,7 +5,7 @@
 
 %ctor {
     if (_isTarget(TargetTypeApps | TargetTypeGenericExtensions, @[@"com.apple.WebKit.WebContent", @"kbd"])) {
-        dlopen("/Library/MobileSubstrate/DynamicLibraries/EmojiPort/EmojiAttributes.dylib", RTLD_LAZY);
-        dlopen("/Library/MobileSubstrate/DynamicLibraries/EmojiPort/EmojiPortPEReal.dylib", RTLD_LAZY);
+        dlopen("/Library/MobileSubstrate/DynamicLibraries/EmojiPort/EmojiAttributes.dylib", RTLD_NOW);
+        dlopen("/Library/MobileSubstrate/DynamicLibraries/EmojiPort/EmojiPortPEReal.dylib", RTLD_NOW);
     }
 }

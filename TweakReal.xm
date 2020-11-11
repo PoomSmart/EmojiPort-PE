@@ -218,7 +218,7 @@ static CFStringRef overrideResourceName(CFStringRef const resourceName, CFString
 
 %group CoreEmoji_Bundle
 
-CFURLRef (*copyResourceURLFromFrameworkBundle)(CFStringRef const, CFStringRef const, CFLocaleRef const);
+CFURLRef (*copyResourceURLFromFrameworkBundle)(CFStringRef const, CFStringRef const, CFLocaleRef const) = NULL;
 %hookf(CFURLRef, copyResourceURLFromFrameworkBundle, CFStringRef const resourceName, CFStringRef const resourceType, CFLocaleRef const locale) {
     CFStringRef newResourceName = overrideResourceName(resourceName, resourceType, NULL);
     CFURLRef url = %orig(newResourceName, resourceType, locale);
@@ -231,7 +231,7 @@ CFURLRef (*copyResourceURLFromFrameworkBundle)(CFStringRef const, CFStringRef co
 
 %group CoreEmoji_Bundle2
 
-CFURLRef (*copyResourceURLFromFrameworkBundle2)(CFStringRef const, CFStringRef const, CFStringRef const, CFLocaleRef const);
+CFURLRef (*copyResourceURLFromFrameworkBundle2)(CFStringRef const, CFStringRef const, CFStringRef const, CFLocaleRef const) = NULL;
 %hookf(CFURLRef, copyResourceURLFromFrameworkBundle2, CFStringRef const resourceName, CFStringRef const resourceType, CFStringRef const folder, CFStringRef const locale) {
     CFStringRef newResourceName = overrideResourceName(resourceName, resourceType, folder);
     CFURLRef url = %orig(newResourceName, resourceType, folder, locale);
@@ -244,6 +244,7 @@ CFURLRef (*copyResourceURLFromFrameworkBundle2)(CFStringRef const, CFStringRef c
 
 %ctor {
     dlopen(realPath2(@"/System/Library/PrivateFrameworks/EmojiFoundation.framework/EmojiFoundation"), RTLD_NOW);
+    dlopen(realPath2(@"/System/Library/PrivateFrameworks/CoreEmoji.framework/CoreEmoji"), RTLD_NOW);
     MSImageRef ref = MSGetImageByName(realPath2(@"/System/Library/PrivateFrameworks/CoreEmoji.framework/CoreEmoji"));
     copyResourceURLFromFrameworkBundle = (CFURLRef (*)(CFStringRef const, CFStringRef const, CFLocaleRef const))_PSFindSymbolCallable(ref, "__ZN3CEM34copyResourceURLFromFrameworkBundleEPK10__CFStringS2_PK10__CFLocale");
     if (copyResourceURLFromFrameworkBundle) {
