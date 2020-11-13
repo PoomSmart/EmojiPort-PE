@@ -69,7 +69,6 @@ BOOL overrideSkinTone = NO;
 
 %group UIKBRect
 
-void (*UIKBRectsInit_Wildcat)(void *, id, UIKBTree *, id) = NULL;
 %hookf(void, UIKBRectsInit_Wildcat, void *arg0, id arg1, UIKBTree *key, id state) {
     BOOL isEmoji = [key.name isEqualToString:@"EmojiPopupKey"] && [PSEmojiUtilities isCoupleMultiSkinToneEmoji:key.displayString];
     if (isEmoji)
@@ -86,9 +85,10 @@ void (*UIKBRectsInit_Wildcat)(void *, id, UIKBTree *, id) = NULL;
         return;
     dlopen(realPath2(@"/System/Library/PrivateFrameworks/EmojiFoundation.framework/EmojiFoundation"), RTLD_NOW);
     MSImageRef ref = MSGetImageByName(IS_IOS_OR_NEWER(iOS_12_0) ? "/System/Library/PrivateFrameworks/UIKitCore.framework/UIKitCore" : "/System/Library/Frameworks/UIKit.framework/UIKit");
-    UIKBRectsInit_Wildcat = (void (*)(void *, id, UIKBTree *, id))_PSFindSymbolCallable(ref, "_UIKBRectsInit_Wildcat");
-    if (UIKBRectsInit_Wildcat) {
-        %init(UIKBRect);
+    void (*UIKBRectsInit_Wildcat_p)(void *, id, UIKBTree *, id) = NULL;
+    UIKBRectsInit_Wildcat_p = (typeof(UIKBRectsInit_Wildcat_p))_PSFindSymbolCallable(ref, "_UIKBRectsInit_Wildcat");
+    if (UIKBRectsInit_Wildcat_p) {
+        %init(UIKBRect, UIKBRectsInit_Wildcat = (void *)UIKBRectsInit_Wildcat_p);
     }
     %init;
 }
