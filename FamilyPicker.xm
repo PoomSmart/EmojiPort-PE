@@ -1,7 +1,9 @@
-#import "../PS.h"
+#import "../PSHeader/Misc.h"
 #import "../EmojiLibrary/PSEmojiUtilities.h"
 #import "../EmojiLibrary/Header.h"
 #import <theos/IOSMacros.h>
+#import <version.h>
+#import <dlfcn.h>
 
 BOOL overrideSkinTone = NO;
 
@@ -54,6 +56,19 @@ BOOL overrideSkinTone = NO;
 
 %end
 
+%hook UIKBRenderFactoryiPhone
+
+- (void)_configureTraitsForPopupStyle:(id)style withKey:(UIKBTree *)key onKeyplane:(id)keyplane {
+    BOOL isEmoji = [key.name isEqualToString:@"EmojiPopupKey"] && [PSEmojiUtilities isCoupleMultiSkinToneEmoji:key.displayString];
+    if (isEmoji)
+        key.name = @"EmojiPopupKey2";
+    %orig(style, key, keyplane);
+    if (isEmoji)
+        key.name = @"EmojiPopupKey";
+}
+
+%end
+
 %hook UIKeyboardEmojiCollectionInputView
 
 - (UIKBTree *)subTreeHitTest:(CGPoint)point {
@@ -67,28 +82,9 @@ BOOL overrideSkinTone = NO;
 
 %end
 
-%group UIKBRect
-
-%hookf(void, UIKBRectsInit_Wildcat, void *arg0, id arg1, UIKBTree *key, id state) {
-    BOOL isEmoji = [key.name isEqualToString:@"EmojiPopupKey"] && [PSEmojiUtilities isCoupleMultiSkinToneEmoji:key.displayString];
-    if (isEmoji)
-        key.name = @"EmojiPopupKey2";
-    %orig(arg0, arg1, key, state);
-    if (isEmoji)
-        key.name = @"EmojiPopupKey";
-}
-
-%end
-
 %ctor {
     if (IS_IOS_OR_NEWER(iOS_13_2))
         return;
     dlopen(realPath2(@"/System/Library/PrivateFrameworks/EmojiFoundation.framework/EmojiFoundation"), RTLD_NOW);
-    MSImageRef ref = MSGetImageByName(IS_IOS_OR_NEWER(iOS_12_0) ? "/System/Library/PrivateFrameworks/UIKitCore.framework/UIKitCore" : "/System/Library/Frameworks/UIKit.framework/UIKit");
-    void (*UIKBRectsInit_Wildcat_p)(void *, id, UIKBTree *, id) = NULL;
-    UIKBRectsInit_Wildcat_p = (typeof(UIKBRectsInit_Wildcat_p))_PSFindSymbolCallable(ref, "_UIKBRectsInit_Wildcat");
-    if (UIKBRectsInit_Wildcat_p) {
-        %init(UIKBRect, UIKBRectsInit_Wildcat = (void *)UIKBRectsInit_Wildcat_p);
-    }
     %init;
 }
