@@ -1,6 +1,7 @@
 #import "../PSHeader/Misc.h"
 #import "../EmojiLibrary/PSEmojiUtilities.h"
 #import "../EmojiLibrary/Header.h"
+#import <UIKit/UIFunctions.h>
 #import <theos/IOSMacros.h>
 #import <version.h>
 #import <dlfcn.h>
