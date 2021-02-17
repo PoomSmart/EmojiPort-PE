@@ -150,7 +150,7 @@
 }
 
 + (BOOL)_isCoupleMultiSkinToneEmoji:(NSString *)emoji {
-    return [[self CoupleMultiSkinToneEmoji] containsObject:emoji] || [[self ExtendedCoupleMultiSkinToneEmoji] containsObject:emoji];
+    return [[PSEmojiUtilities CoupleMultiSkinToneEmoji] containsObject:emoji] || [[PSEmojiUtilities ExtendedCoupleMultiSkinToneEmoji] containsObject:emoji];
 }
 
 + (BOOL)_isComposedCoupleMultiSkinToneEmoji:(NSString *)emoji {
