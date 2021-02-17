@@ -116,6 +116,10 @@
     return [PSEmojiUtilities MultiPersonFamilySkinToneEmoji];
 }
 
++ (NSArray <NSString *> *)ExtendedCoupleMultiSkinToneEmoji {
+    return [PSEmojiUtilities ExtendedCoupleMultiSkinToneEmoji];
+}
+
 + (NSArray <NSString *> *)computeEmojiFlagsSortedByLanguage {
     return [PSEmojiUtilities FlagsEmoji];
 }
@@ -143,6 +147,14 @@
     for (NSString *emoji in emojis)
         [tokens addObject:[NSClassFromString(@"EMFEmojiToken") emojiTokenWithString:emoji localeData:localeData]];
     return tokens;
+}
+
++ (BOOL)_isCoupleMultiSkinToneEmoji:(NSString *)emoji {
+    return [[self CoupleMultiSkinToneEmoji] containsObject:emoji] || [[self ExtendedCoupleMultiSkinToneEmoji] containsObject:emoji];
+}
+
++ (BOOL)_isComposedCoupleMultiSkinToneEmoji:(NSString *)emoji {
+    return [PSEmojiUtilities isComposedCoupleMultiSkinToneEmoji:emoji];
 }
 
 %end

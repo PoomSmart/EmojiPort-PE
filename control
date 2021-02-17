@@ -1,9 +1,9 @@
 Package: com.ps.emojiportpe
-Name: EmojiPort (iOS 12.0-14.1)
-Depends: firmware (>= 12.0), firmware (<< 14.2), com.ps.emojiattributes (>= 1.3.27), com.ps.emojilibrary (>= 1.2~b1), com.ps.emojiport10resources (>= 1.1~b1)
+Name: EmojiPort (iOS 12.0-14.4)
+Depends: firmware (>= 12.0), firmware (<< 14.5), com.ps.emojiattributes (>= 1.3.27), com.ps.emojilibrary (>= 1.2.2~b2), com.ps.emojiport10resources (>= 1.1~b1)
 Version: 1.0.0
 Architecture: iphoneos-arm
-Description: Latest emojis for iOS 12.0-14.1
+Description: Latest emojis for iOS 12.0-14.4
 Maintainer: PoomSmart
 Author: PoomSmart
 Section: Tweaks
