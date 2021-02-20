@@ -4,6 +4,8 @@
 
 %config(generator=MobileSubstrate)
 
+BOOL overrideIsCoupleMultiSkinToneEmoji = NO;
+
 %group UIKit
 
 %hook UIKeyboardEmojiCategory
@@ -149,12 +151,14 @@
     return tokens;
 }
 
-+ (BOOL)_isCoupleMultiSkinToneEmoji:(NSString *)emoji {
-    return [[PSEmojiUtilities CoupleMultiSkinToneEmoji] containsObject:emoji] || [[PSEmojiUtilities ExtendedCoupleMultiSkinToneEmoji] containsObject:emoji];
++ (BOOL)_isCoupleMultiSkinToneEmoji:(NSString *)emojiString {
+    if (overrideIsCoupleMultiSkinToneEmoji)
+        return [PSEmojiUtilities supportsCoupleSkinToneSelection:emojiString];
+    return [PSEmojiUtilities isCoupleMultiSkinToneEmoji:emojiString];
 }
 
-+ (BOOL)_isComposedCoupleMultiSkinToneEmoji:(NSString *)emoji {
-    return [PSEmojiUtilities isComposedCoupleMultiSkinToneEmoji:emoji];
++ (BOOL)_isComposedCoupleMultiSkinToneEmoji:(NSString *)emojiString {
+    return [PSEmojiUtilities isComposedCoupleMultiSkinToneEmoji:emojiString];
 }
 
 %end
@@ -163,6 +167,22 @@
 
 + (NSArray <NSString *> *)_cachedFlagCategoryEmoji:(id)arg1 {
     return [PSEmojiUtilities FlagsEmoji];
+}
+
+// - (void)didUseEmoji:(NSString *)emojiString usageMode:(id)usageMode typingName:(id)typingName {
+//     overrideIsCoupleMultiSkinToneEmoji = YES;
+//     %orig;
+//     overrideIsCoupleMultiSkinToneEmoji = NO;
+// }
+
+%end
+
+%hook EMFEmojiPreferencesClient
+
+- (void)didUseEmoji:(NSString *)emojiString usageMode:(id)usageMode typingName:(id)typingName {
+    overrideIsCoupleMultiSkinToneEmoji = YES;
+    %orig;
+    overrideIsCoupleMultiSkinToneEmoji = NO;
 }
 
 %end
@@ -181,21 +201,16 @@
     return [PSEmojiUtilities hasSkinToneVariants:emojiString];
 }
 
++ (NSString *)_multiPersonStringForString:(NSString *)emojiString skinToneVariantSpecifier:(NSArray <NSString *> *)specifier {
+    return [PSEmojiUtilities multiPersonStringForString:emojiString skinToneVariantSpecifier:specifier];
+}
+
 + (NSArray <NSString *> *)_skinToneVariantsForString:(NSString *)emojiString {
     return [PSEmojiUtilities skinToneVariants:emojiString withSelf:YES];
 }
 
-+ (NSArray <NSArray <NSString *> *> *)_skinToneChooserVariantsForMultiPersonType:(NSInteger)type {
-    if (type == PSEmojiMultiPersonTypeNN)
-        return [PSEmojiUtilities skinToneChooserVariantsForNeutralMultiPersonType];
-    return %orig;
-}
-
-+ (NSString *)_multiPersonStringForString:(NSString *)string skinToneVariantSpecifier:(NSArray <NSString *> *)specifier {
-    NSString *value = %orig;
-    if (value == nil && [PSEmojiUtilities multiPersonTypeForString:string] == PSEmojiMultiPersonTypeNN)
-        return [PSEmojiUtilities multiPersonStringForNeutralStringWithSkinToneVariantSpecifier:specifier];
-    return value;
++ (NSArray <NSArray <NSString *> *> *)_skinToneChooserVariantsForString:(NSString *)emojiString {
+    return [PSEmojiUtilities skinToneChooserVariantsForString:emojiString];
 }
 
 + (PSEmojiMultiPersonType)multiPersonTypeForString:(NSString *)string {
