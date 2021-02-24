@@ -213,6 +213,10 @@ BOOL overrideIsCoupleMultiSkinToneEmoji = NO;
     return [PSEmojiUtilities skinToneChooserVariantsForString:emojiString];
 }
 
++ (NSArray <NSString *> *)_tokenizedMultiPersonFromString:(NSString *)emojiString {
+    return [PSEmojiUtilities tokenizedMultiPersonFromString:emojiString];
+}
+
 + (PSEmojiMultiPersonType)multiPersonTypeForString:(NSString *)string {
     return [PSEmojiUtilities multiPersonTypeForString:string];
 }
