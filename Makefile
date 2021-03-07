@@ -1,4 +1,4 @@
-PACKAGE_VERSION = 1.1~b4
+PACKAGE_VERSION = 1.1~b5
 
 ifeq ($(SIMULATOR),1)
 	TARGET = simulator:clang:latest:12.0
@@ -23,7 +23,8 @@ include $(THEOS_MAKE_PATH)/library.mk
 ifneq ($(SIMULATOR),1)
 
 TWEAK_NAME = EmojiPortPE
-EmojiPortPE_FILES = Tweak.xm
+EmojiPortPE_FILES = Tweak.x
+EmojiPortPE_CFLAGS = -fobjc-arc
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 endif

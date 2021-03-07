@@ -1,7 +1,6 @@
 #import "../PSHeader/Misc.h"
 #import "../EmojiLibrary/PSEmojiUtilities.h"
 #import "../EmojiLibrary/Header.h"
-#import <UIKit/UIFunctions.h>
 #import <theos/IOSMacros.h>
 #import <version.h>
 #import <dlfcn.h>
@@ -16,7 +15,9 @@ BOOL overrideSkinTone = NO;
 
 - (NSArray <NSString *> *)_skinToneVariantStrings {
     NSString *emojiString = self.string;
-    NSMutableArray *variants = [PSEmojiUtilities skinToneVariants:emojiString withSelf:NO];
+    if (![PSEmojiUtilities isCoupleMultiSkinToneEmoji:emojiString])
+        return %orig;
+    NSMutableArray <NSString *> *variants = [PSEmojiUtilities skinToneVariants:emojiString];
     if (variants) {
         if (!IS_IPAD) {
             [variants insertObject:emojiString atIndex:0];
@@ -25,7 +26,7 @@ BOOL overrideSkinTone = NO;
         for (int i = 20; i > 0; i -= 5)
             [variants insertObject:@"" atIndex:i];
         [variants insertObject:emojiString atIndex:0];
-        NSMutableArray *trueVariants = [NSMutableArray array];
+        NSMutableArray <NSString *> *trueVariants = [NSMutableArray array];
         for (NSInteger index = 0; index < 30; ++index) {
             NSInteger insertIndex = ((index % 5) * 6) + (index / 5);
             [trueVariants addObject:variants[insertIndex]];
