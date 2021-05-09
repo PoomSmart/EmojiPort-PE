@@ -1,6 +1,7 @@
 #import "../PS.h"
 #import "../EmojiLibrary/PSEmojiUtilities.h"
 #import "../EmojiLibrary/Header.h"
+#import <dlfcn.h>
 
 %config(generator=MobileSubstrate)
 
@@ -169,12 +170,6 @@ BOOL overrideIsCoupleMultiSkinToneEmoji = NO;
     return [PSEmojiUtilities FlagsEmoji];
 }
 
-// - (void)didUseEmoji:(NSString *)emojiString usageMode:(id)usageMode typingName:(id)typingName {
-//     overrideIsCoupleMultiSkinToneEmoji = YES;
-//     %orig;
-//     overrideIsCoupleMultiSkinToneEmoji = NO;
-// }
-
 %end
 
 %hook EMFEmojiPreferencesClient
@@ -272,9 +267,10 @@ static CFStringRef overrideResourceName(CFStringRef const resourceName, CFString
 %end
 
 %ctor {
+    const char *coreEmoji = realPath2(@"/System/Library/PrivateFrameworks/CoreEmoji.framework/CoreEmoji");
     dlopen(realPath2(@"/System/Library/PrivateFrameworks/EmojiFoundation.framework/EmojiFoundation"), RTLD_NOW);
-    dlopen(realPath2(@"/System/Library/PrivateFrameworks/CoreEmoji.framework/CoreEmoji"), RTLD_NOW);
-    MSImageRef ref = MSGetImageByName(realPath2(@"/System/Library/PrivateFrameworks/CoreEmoji.framework/CoreEmoji"));
+    dlopen(coreEmoji, RTLD_NOW);
+    MSImageRef ref = MSGetImageByName(coreEmoji);
     CFURLRef (*copyResourceURLFromFrameworkBundle_p)(CFStringRef const, CFStringRef const, CFLocaleRef const) = NULL;
     copyResourceURLFromFrameworkBundle_p = (typeof(copyResourceURLFromFrameworkBundle_p))_PSFindSymbolCallable(ref, "__ZN3CEM34copyResourceURLFromFrameworkBundleEPK10__CFStringS2_PK10__CFLocale");
     if (copyResourceURLFromFrameworkBundle_p) {

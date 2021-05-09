@@ -1,4 +1,5 @@
-PACKAGE_VERSION = 1.1~b5
+export PREFIX = $(THEOS)/toolchain/Xcode11.xctoolchain/usr/bin/
+PACKAGE_VERSION = 1.1.1
 
 ifeq ($(SIMULATOR),1)
 	TARGET = simulator:clang:latest:12.0

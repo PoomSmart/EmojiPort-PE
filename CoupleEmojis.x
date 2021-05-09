@@ -30,9 +30,6 @@ static BOOL shouldFallbackToOriginalImplementation(NSString *baseString) {
     NSString *representation = [PSEmojiUtilities multiPersonStringForString:self.baseEmojiString skinToneVariantSpecifier:configuration];
     UIKeyboardEmojiWellView *wellView = self.configuredWellView;
     [wellView setStringRepresentation:representation silhouette:silhouette];
-    // if (!silhouette && [NSClassFromString(@"UIKeyboardEmojiCollectionInputView") shouldHighlightEmoji:representation]) {
-        // set unreleased banner
-    // }
 }
 
 - (void)_configureSkinToneVariantSpecifiersForBaseString:(NSString *)baseString {
@@ -73,8 +70,6 @@ static BOOL shouldFallbackToOriginalImplementation(NSString *baseString) {
         }
     }
     self.neutralWellView.stringRepresentation = self.baseEmojiString;
-    // if ([NSClassFromString(@"UIKeyboardEmojiCollectionInputView") shouldHighlightEmoji:self.baseEmojiString])
-    //     self.neutralWellView.unreleasedHighlight = YES;
     [self _updatePreviewWellForCurrentSelection];
 }
 
