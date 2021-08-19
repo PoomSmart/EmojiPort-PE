@@ -40,11 +40,11 @@ BOOL overrideIsCoupleMultiSkinToneEmoji = NO;
 %hook NSBundle
 
 - (NSURL *)URLForResource:(NSString *)resourceName withExtension:(NSString *)extension {
-    if (stringEqual(resourceName, @"document_index")
-        || stringEqual(resourceName, @"term_index")
-        || stringEqual(resourceName, @"document_index_stemmed")
-        || stringEqual(resourceName, @"term_index_stemmed")
-        || stringEqual(resourceName, @"vocabulary")) {
+    if ([resourceName isEqualToString:@"document_index"]
+        || [resourceName isEqualToString:@"term_index"]
+        || [resourceName isEqualToString:@"document_index_stemmed"]
+        || [resourceName isEqualToString:@"term_index_stemmed"]
+        || [resourceName isEqualToString:@"vocabulary"]) {
             NSURL *url = %orig([resourceName stringByAppendingString:@"2"], extension);
             if (url) return url;
         }
@@ -131,21 +131,21 @@ BOOL overrideIsCoupleMultiSkinToneEmoji = NO;
     NSString *identifier = self.identifier;
     NSMutableArray <EMFEmojiToken *> *tokens = [NSMutableArray array];
     NSArray <NSString *> *emojis = nil;
-    if (stringEqual(identifier, @"EMFEmojiCategoryPrepopulated"))
+    if ([identifier isEqualToString:@"EMFEmojiCategoryPrepopulated"])
         emojis = [PSEmojiUtilities PrepolulatedEmoji];
-    else if (stringEqual(identifier, @"EMFEmojiCategoryPeople"))
+    else if ([identifier isEqualToString:@"EMFEmojiCategoryPeople"])
         emojis = [PSEmojiUtilities PeopleEmoji];
-    else if (stringEqual(identifier, @"EMFEmojiCategoryNature"))
+    else if ([identifier isEqualToString:@"EMFEmojiCategoryNature"])
         emojis = [PSEmojiUtilities NatureEmoji];
-    else if (stringEqual(identifier, @"EMFEmojiCategoryFoodAndDrink"))
+    else if ([identifier isEqualToString:@"EMFEmojiCategoryFoodAndDrink"])
         emojis = [PSEmojiUtilities FoodAndDrinkEmoji];
-    else if (stringEqual(identifier, @"EMFEmojiCategoryActivity"))
+    else if ([identifier isEqualToString:@"EMFEmojiCategoryActivity"])
         emojis = [PSEmojiUtilities ActivityEmoji];
-    else if (stringEqual(identifier, @"EMFEmojiCategoryTravelAndPlaces"))
+    else if ([identifier isEqualToString:@"EMFEmojiCategoryTravelAndPlaces"])
         emojis = [PSEmojiUtilities TravelAndPlacesEmoji];
-    else if (stringEqual(identifier, @"EMFEmojiCategoryObjects"))
+    else if ([identifier isEqualToString:@"EMFEmojiCategoryObjects"])
         emojis = [PSEmojiUtilities ObjectsEmoji];
-    else if (stringEqual(identifier, @"EMFEmojiCategorySymbols"))
+    else if ([identifier isEqualToString:@"EMFEmojiCategorySymbols"])
         emojis = [PSEmojiUtilities SymbolsEmoji];
     for (NSString *emoji in emojis)
         [tokens addObject:[NSClassFromString(@"EMFEmojiToken") emojiTokenWithString:emoji localeData:localeData]];
@@ -228,8 +228,11 @@ static CFStringRef overrideResourceName(CFStringRef const resourceName, CFString
             || CFStringEqual(resourceType, CFSTR("bitmap"))
             || CFStringEqual(resourceType, CFSTR("strings"))
             || CFStringEqual(resourceType, CFSTR("stringsdict"));
-    BOOL byName = CFStringEqual(resourceName, CFSTR("term_index"));
-    BOOL byFolder = gate && folder && (CFStringEqual(folder, CFSTR("SearchEngineOverrideLists")) || CFStringEqual(folder, CFSTR("SearchModel-en")));
+    BOOL byName = CFStringEqual(resourceName, CFSTR("term_index"))
+            || CFStringEqual(resourceName, CFSTR("term_index_stemmed"))
+            || CFStringEqual(resourceName, CFSTR("document_index"))
+            || CFStringEqual(resourceName, CFSTR("document_index_stemmed"));
+    BOOL byFolder = folder && (CFStringEqual(folder, CFSTR("SearchEngineOverrideLists")) || CFStringEqual(folder, CFSTR("SearchModel-en")));
     freeFlag = NO;
     if (gate && (byName || byExtension || byFolder)) {
         if (!CFStringEqual(resourceName, CFSTR("emojimeta"))) {
@@ -272,17 +275,17 @@ static CFStringRef overrideResourceName(CFStringRef const resourceName, CFString
     dlopen(coreEmoji, RTLD_NOW);
     MSImageRef ref = MSGetImageByName(coreEmoji);
     CFURLRef (*copyResourceURLFromFrameworkBundle_p)(CFStringRef const, CFStringRef const, CFLocaleRef const) = NULL;
-    copyResourceURLFromFrameworkBundle_p = (typeof(copyResourceURLFromFrameworkBundle_p))_PSFindSymbolCallable(ref, "__ZN3CEM34copyResourceURLFromFrameworkBundleEPK10__CFStringS2_PK10__CFLocale");
+    copyResourceURLFromFrameworkBundle_p = (typeof(copyResourceURLFromFrameworkBundle_p))MSFindSymbol(ref, "__ZN3CEM34copyResourceURLFromFrameworkBundleEPK10__CFStringS2_PK10__CFLocale");
     if (copyResourceURLFromFrameworkBundle_p) {
         %init(CoreEmoji_Bundle, copyResourceURLFromFrameworkBundle = (void *)copyResourceURLFromFrameworkBundle_p);
     }
     CFURLRef (*copyResourceURLFromFrameworkBundle2_p)(CFStringRef const, CFStringRef const, CFStringRef const, CFLocaleRef const) = NULL;
-    copyResourceURLFromFrameworkBundle2_p = (typeof(copyResourceURLFromFrameworkBundle2_p))_PSFindSymbolCallable(ref, "__ZN3CEM34copyResourceURLFromFrameworkBundleEPK10__CFStringS2_S2_PK10__CFLocale");
+    copyResourceURLFromFrameworkBundle2_p = (typeof(copyResourceURLFromFrameworkBundle2_p))MSFindSymbol(ref, "__ZN3CEM34copyResourceURLFromFrameworkBundleEPK10__CFStringS2_S2_PK10__CFLocale");
     if (copyResourceURLFromFrameworkBundle2_p) {
         %init(CoreEmoji_Bundle2, copyResourceURLFromFrameworkBundle2 = (void *)copyResourceURLFromFrameworkBundle2_p);
     }
     NSString *processName = [[NSProcessInfo processInfo] processName];
-    BOOL kbd = stringEqual(processName, @"kbd");
+    BOOL kbd = [processName isEqualToString:@"kbd"];
     if (!kbd) {
         %init(UIKit);
     }
