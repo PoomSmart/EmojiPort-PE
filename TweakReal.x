@@ -148,7 +148,7 @@ BOOL overrideIsCoupleMultiSkinToneEmoji = NO;
     else if ([identifier isEqualToString:@"EMFEmojiCategorySymbols"])
         emojis = [PSEmojiUtilities SymbolsEmoji];
     for (NSString *emoji in emojis)
-        [tokens addObject:[NSClassFromString(@"EMFEmojiToken") emojiTokenWithString:emoji localeData:localeData]];
+        [tokens addObject:[%c(EMFEmojiToken) emojiTokenWithString:emoji localeData:localeData]];
     return tokens;
 }
 
@@ -271,8 +271,8 @@ static CFStringRef overrideResourceName(CFStringRef const resourceName, CFString
 
 %ctor {
     const char *coreEmoji = realPath2(@"/System/Library/PrivateFrameworks/CoreEmoji.framework/CoreEmoji");
-    dlopen(realPath2(@"/System/Library/PrivateFrameworks/EmojiFoundation.framework/EmojiFoundation"), RTLD_NOW);
     dlopen(coreEmoji, RTLD_NOW);
+    dlopen(realPath2(@"/System/Library/PrivateFrameworks/EmojiFoundation.framework/EmojiFoundation"), RTLD_NOW);
     MSImageRef ref = MSGetImageByName(coreEmoji);
     CFURLRef (*copyResourceURLFromFrameworkBundle_p)(CFStringRef const, CFStringRef const, CFLocaleRef const) = NULL;
     copyResourceURLFromFrameworkBundle_p = (typeof(copyResourceURLFromFrameworkBundle_p))MSFindSymbol(ref, "__ZN3CEM34copyResourceURLFromFrameworkBundleEPK10__CFStringS2_PK10__CFLocale");

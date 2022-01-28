@@ -2,20 +2,21 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>Filter</key>
-	<dict>
-		<key>Bundles</key>
-		<array>
-			<string>com.apple.UIKit</string>
-		</array>
-		<key>Executables</key>
-		<array>
-			<string>kbd</string>
-		</array>
-		<key>CoreFoundationVersion</key>
-		<array>
-			<real>1500</real>
-		</array>
-	</dict>
+    <key>Filter</key>
+    <dict>
+        <key>Bundles</key>
+        <array>
+            <string>com.apple.UIKit</string>
+            <string>com.apple.WebKit.WebContent</string>
+        </array>
+        <key>Executables</key>
+        <array>
+            <string>kbd</string>
+        </array>
+        <key>CoreFoundationVersion</key>
+        <array>
+            <real>1500</real>
+        </array>
+    </dict>
 </dict>
 </plist>

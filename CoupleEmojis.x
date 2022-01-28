@@ -8,7 +8,7 @@ static BOOL shouldFallbackToOriginalImplementation(NSString *baseString) {
 
 %hook UIKeyboardEmojiFamilyConfigurationView
 
-%property(retain, nonatomic) NSArray *variantDisplayRows;
+%property (retain, nonatomic) NSArray *variantDisplayRows;
 
 %new
 - (NSUInteger)_silhouetteFromCurrentSelections {
@@ -52,7 +52,7 @@ static BOOL shouldFallbackToOriginalImplementation(NSString *baseString) {
         for (NSArray <NSString *> *row in self.variantDisplayRows) {
             __block NSMutableArray <UIKeyboardEmojiWellView *> *subviews = [NSMutableArray array];
             [row enumerateObjectsUsingBlock:^(NSString *item, NSUInteger idx, BOOL *stop) {
-                UIKeyboardEmojiWellView *wellView = [[NSClassFromString(@"UIKeyboardEmojiWellView") alloc] initWithFrame:CGRectZero];
+                UIKeyboardEmojiWellView *wellView = [[%c(UIKeyboardEmojiWellView) alloc] initWithFrame:CGRectZero];
                 UIColor *color = [[self class] _selectionAndSeparatorColorForDarkMode:self.usesDarkStyle];
                 wellView.selectionBackgroundColor = color;
                 [wellView setStringRepresentation:item silhouette:(section == 0) + 1];
