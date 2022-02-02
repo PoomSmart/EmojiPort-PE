@@ -1,4 +1,4 @@
-PACKAGE_VERSION = 1.2.0~b1
+PACKAGE_VERSION = 1.2.0~b2
 
 ifeq ($(SIMULATOR),1)
 	TARGET = simulator:clang:latest:12.0
@@ -31,7 +31,7 @@ endif
 
 ifeq ($(SIMULATOR),1)
 setup:: clean all
-	@rm -f /opt/simject/EmojiPortPE.dylib
-	@cp -v $(THEOS_OBJ_DIR)/$(LIBRARY_NAME).dylib /opt/simject/EmojiPortPE.dylib
-	@cp -v $(PWD)/EmojiPortPE.plist /opt/simject
+	@rm -f /opt/simject/$(TWEAK_NAME).dylib
+	@cp -v $(THEOS_OBJ_DIR)/$(LIBRARY_NAME).dylib /opt/simject/$(TWEAK_NAME).dylib
+	@cp -v $(PWD)/$(TWEAK_NAME).plist /opt/simject
 endif
