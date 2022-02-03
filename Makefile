@@ -10,6 +10,8 @@ endif
 
 include $(THEOS)/makefiles/common.mk
 
+TWEAK_NAME = EmojiPortPE
+
 LIBRARY_NAME = EmojiPortPEReal
 $(LIBRARY_NAME)_FILES = TweakReal.x FamilyPicker.x CoupleEmojis.x
 $(LIBRARY_NAME)_CFLAGS = -fobjc-arc
@@ -22,7 +24,6 @@ include $(THEOS_MAKE_PATH)/library.mk
 
 ifneq ($(SIMULATOR),1)
 
-TWEAK_NAME = EmojiPortPE
 $(TWEAK_NAME)_FILES = Tweak.x
 $(TWEAK_NAME)_CFLAGS = -fobjc-arc
 
