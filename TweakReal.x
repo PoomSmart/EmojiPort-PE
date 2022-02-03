@@ -218,6 +218,14 @@ BOOL overrideIsCoupleMultiSkinToneEmoji = NO;
 
 %end
 
+%hook EMFEmojiToken
+
+- (BOOL)supportsSkinToneVariants {
+    return [PSEmojiUtilities hasSkinToneVariants:[self valueForKey:@"_string"]];
+}
+
+%end
+
 %end
 
 static BOOL freeFlag = NO;
