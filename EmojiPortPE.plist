@@ -6,6 +6,7 @@
     <dict>
         <key>Bundles</key>
         <array>
+            <string>com.apple.Foundation</string>
             <string>com.apple.UIKit</string>
             <string>com.apple.WebKit.WebContent</string>
         </array>
