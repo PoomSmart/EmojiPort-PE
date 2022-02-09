@@ -162,6 +162,10 @@ BOOL overrideIsCoupleMultiSkinToneEmoji = NO;
     return [PSEmojiUtilities isComposedCoupleMultiSkinToneEmoji:emojiString];
 }
 
++ (BOOL)_supportsCoupleSkinToneSelection:(NSString *)emojiString {
+    return [PSEmojiUtilities supportsCoupleSkinToneSelection:emojiString];
+}
+
 %end
 
 %hook EMFEmojiPreferences
@@ -200,6 +204,10 @@ BOOL overrideIsCoupleMultiSkinToneEmoji = NO;
     return [PSEmojiUtilities multiPersonStringForString:emojiString skinToneVariantSpecifier:specifier];
 }
 
++ (NSString *)_joiningStringForCoupleString:(NSString *)emojiString {
+    return [PSEmojiUtilities joiningStringForCoupleString:emojiString];
+}
+
 + (NSArray <NSString *> *)_skinToneVariantsForString:(NSString *)emojiString {
     return [PSEmojiUtilities skinToneVariants:emojiString withSelf:YES];
 }
@@ -208,11 +216,19 @@ BOOL overrideIsCoupleMultiSkinToneEmoji = NO;
     return [PSEmojiUtilities skinToneChooserVariantsForString:emojiString];
 }
 
++ (NSArray <NSArray <NSString *> *> *)_skinToneChooserVariantsForHandHoldingCoupleType:(PSEmojiMultiSkinType)coupleType {
+    return [PSEmojiUtilities skinToneChooserVariantsForHandHoldingCoupleType:coupleType];
+}
+
++ (NSArray <NSArray <NSString *> *> *)_skinToneChooserArraysForCoupleType:(PSEmojiMultiSkinType)coupleType joiner:(NSString *)joiner {
+    return [PSEmojiUtilities skinToneChooserArraysForCoupleType:coupleType joiner:joiner];
+}
+
 + (NSArray <NSString *> *)_tokenizedMultiPersonFromString:(NSString *)emojiString {
     return [PSEmojiUtilities tokenizedMultiPersonFromString:emojiString];
 }
 
-+ (PSEmojiMultiPersonType)multiPersonTypeForString:(NSString *)string {
++ (PSEmojiMultiSkinType)multiPersonTypeForString:(NSString *)string {
     return [PSEmojiUtilities multiPersonTypeForString:string];
 }
 

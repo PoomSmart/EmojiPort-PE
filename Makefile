@@ -1,4 +1,4 @@
-PACKAGE_VERSION = 1.2.1
+PACKAGE_VERSION = 1.2.2
 
 ifeq ($(SIMULATOR),1)
 	TARGET = simulator:clang:latest:12.0
@@ -13,7 +13,7 @@ include $(THEOS)/makefiles/common.mk
 TWEAK_NAME = EmojiPortPE
 
 LIBRARY_NAME = EmojiPortPEReal
-$(LIBRARY_NAME)_FILES = TweakReal.x FamilyPicker.x CoupleEmojis.x
+$(LIBRARY_NAME)_FILES = TweakReal.x FamilyPicker.x MultiSkinEmojis.x
 $(LIBRARY_NAME)_CFLAGS = -fobjc-arc
 $(LIBRARY_NAME)_INSTALL_PATH = /Library/MobileSubstrate/DynamicLibraries/EmojiPort
 $(LIBRARY_NAME)_EXTRA_FRAMEWORKS = CydiaSubstrate
