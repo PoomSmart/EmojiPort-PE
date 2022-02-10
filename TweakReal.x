@@ -216,10 +216,6 @@ BOOL overrideIsCoupleMultiSkinToneEmoji = NO;
     return [PSEmojiUtilities skinToneVariants:emojiString withSelf:YES];
 }
 
-+ (NSArray <NSArray <NSString *> *> *)_skinToneChooserVariantsForString:(NSString *)emojiString {
-    return [PSEmojiUtilities skinToneChooserVariantsForString:emojiString];
-}
-
 + (NSArray <NSArray <NSString *> *> *)_skinToneChooserVariantsForHandHoldingCoupleType:(PSEmojiMultiSkinType)coupleType {
     return [PSEmojiUtilities skinToneChooserVariantsForHandHoldingCoupleType:coupleType];
 }
