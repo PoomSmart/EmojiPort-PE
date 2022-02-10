@@ -208,6 +208,10 @@ BOOL overrideIsCoupleMultiSkinToneEmoji = NO;
     return [PSEmojiUtilities joiningStringForCoupleString:emojiString];
 }
 
++ (NSArray <NSString *> *)_skinToneSpecifiersForString:(NSString *)emojiString {
+    return [PSEmojiUtilities skinToneSpecifiersForString:emojiString];
+}
+
 + (NSArray <NSString *> *)_skinToneVariantsForString:(NSString *)emojiString {
     return [PSEmojiUtilities skinToneVariants:emojiString withSelf:YES];
 }
