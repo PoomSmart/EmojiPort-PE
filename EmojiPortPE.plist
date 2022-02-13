@@ -6,13 +6,13 @@
     <dict>
         <key>Bundles</key>
         <array>
-            <string>com.apple.Foundation</string>
             <string>com.apple.UIKit</string>
             <string>com.apple.WebKit.WebContent</string>
         </array>
         <key>Executables</key>
         <array>
             <string>kbd</string>
+            <string>MarkupPhotoExtension</string>
         </array>
         <key>CoreFoundationVersion</key>
         <array>

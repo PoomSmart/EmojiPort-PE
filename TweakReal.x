@@ -153,8 +153,10 @@ BOOL overrideIsCoupleMultiSkinToneEmoji = NO;
 }
 
 + (BOOL)_isCoupleMultiSkinToneEmoji:(NSString *)emojiString {
-    if (overrideIsCoupleMultiSkinToneEmoji)
+    if (overrideIsCoupleMultiSkinToneEmoji) {
+        overrideIsCoupleMultiSkinToneEmoji = NO;
         return [PSEmojiUtilities supportsCoupleSkinToneSelection:emojiString];
+    }
     return [PSEmojiUtilities isCoupleMultiSkinToneEmoji:emojiString];
 }
 
