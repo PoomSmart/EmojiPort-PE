@@ -2,10 +2,6 @@
 #import "../EmojiLibrary/PSEmojiUtilities.h"
 #import "../EmojiLibrary/EmojiUIKit/EmojiUIKit.h"
 
-static BOOL shouldFallbackToOriginalImplementation(NSString *baseString) {
-    return [[PSEmojiUtilities CoupleMultiSkinToneEmoji] containsObject:baseString];
-}
-
 %hook UIKeyboardEmojiFamilyConfigurationView
 
 %property (retain, nonatomic) NSArray *variantDisplayRows;
@@ -21,10 +17,6 @@ static BOOL shouldFallbackToOriginalImplementation(NSString *baseString) {
 }
 
 - (void)_updatePreviewWellForCurrentSelection {
-    if (shouldFallbackToOriginalImplementation(self.baseEmojiString)) {
-        %orig;
-        return;
-    }
     NSArray *configuration = [self _currentlySelectedSkinToneConfiguration];
     NSUInteger silhouette = [self _silhouetteFromCurrentSelections];
     NSString *representation = [PSEmojiUtilities multiPersonStringForString:self.baseEmojiString skinToneVariantSpecifier:configuration];
@@ -32,21 +24,30 @@ static BOOL shouldFallbackToOriginalImplementation(NSString *baseString) {
     [wellView setStringRepresentation:representation silhouette:silhouette];
 }
 
-- (void)_configureSkinToneVariantSpecifiersForBaseString:(NSString *)baseString {
-    if (shouldFallbackToOriginalImplementation(self.baseEmojiString)) {
-        %orig;
-        return;
+- (void)_configureSkinToneVariantSpecifiersForBaseString:(NSString *)baseEmojiString {
+    NSArray <NSArray <NSString *> *> *rows = [PSEmojiUtilities skinToneChooserVariantsForString:baseEmojiString];
+    NSMutableArray <NSMutableArray <NSString *> *> *array = [NSMutableArray array];
+    for (NSArray <NSString *> *row in rows) {
+        NSMutableArray *brray = [NSMutableArray array];
+        for (NSString *variant in row) {
+            NSArray <NSString *> *specifiers = [PSEmojiUtilities skinToneSpecifiersForString:variant];
+            NSString *specifier = [specifiers firstObject];
+            [brray addObject:@[specifier, specifier]];
+        }
+        [array addObject:brray];
     }
-    [self setValue:nil forKey:@"_baseEmojiString"];
-    self.variantDisplayRows = [PSEmojiUtilities coupleSkinToneChooserVariantsForString:baseString];
-    %orig;
+    self.baseEmojiString = baseEmojiString;
+    self.skinToneVariantRows = array;
+    self.variantDisplayRows = [PSEmojiUtilities coupleSkinToneChooserVariantsForString:baseEmojiString];
+    NSMutableArray *indices = [NSMutableArray array];
+    for (int i = 0; i < array.count; ++i) {
+        [indices addObject:@(NSNotFound)];
+    }
+    [self setValue:indices forKey:@"_selectedVariantIndices"];
+    [self _configureFamilyMemberWellStackViews];
 }
 
 - (void)_configureFamilyMemberWellStackViews {
-    if (shouldFallbackToOriginalImplementation(self.baseEmojiString)) {
-        %orig;
-        return;
-    }
     if (self.baseEmojiString) {
         NSInteger section = 0;
         for (NSArray <NSString *> *row in self.variantDisplayRows) {
