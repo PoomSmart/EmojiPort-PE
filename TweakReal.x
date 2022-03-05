@@ -39,16 +39,17 @@ BOOL overrideIsCoupleMultiSkinToneEmoji = NO;
 
 %hook NSBundle
 
-- (NSURL *)URLForResource:(NSString *)resourceName withExtension:(NSString *)extension {
+- (NSURL *)URLForResource:(NSString *)resourceName withExtension:(NSString *)extension subdirectory:(NSString *)subdirectory {
     if ([resourceName isEqualToString:@"document_index"]
         || [resourceName isEqualToString:@"term_index"]
         || [resourceName isEqualToString:@"document_index_stemmed"]
         || [resourceName isEqualToString:@"term_index_stemmed"]
-        || [resourceName isEqualToString:@"vocabulary"]) {
-            NSURL *url = %orig([resourceName stringByAppendingString:@"2"], extension);
+        || [resourceName isEqualToString:@"vocabulary"]
+        || [subdirectory isEqualToString:@"SearchEngineOverrideLists"]) {
+            NSURL *url = %orig([resourceName stringByAppendingString:@"2"], extension, subdirectory);
             if (url) return url;
         }
-    return %orig(resourceName, extension);
+    return %orig;
 }
 
 %end
