@@ -281,7 +281,7 @@ static CFStringRef overrideResourceName(CFStringRef const resourceName, CFString
     BOOL byFolder = folder && (CFStringEqual(folder, CFSTR("SearchEngineOverrideLists")) || CFStringEqual(folder, CFSTR("SearchModel-en")));
     freeFlag = NO;
     if (gate && (byName || byExtension || byFolder)) {
-        if (!CFStringEqual(resourceName, CFSTR("emojimeta")))
+        if (CFStringEqual(resourceName, CFSTR("emojimeta")))
             newResourceName = (CFMutableStringRef)(IS_IOS_OR_NEWER(iOS_12_1) ? CFSTR("emojimeta_modern") : CFSTR("emojimeta_legacy"));
         else {
             newResourceName = CFStringCreateMutableCopy(kCFAllocatorDefault, CFStringGetLength(resourceName), resourceName);
