@@ -1,4 +1,4 @@
-#import "../PS.h"
+#import <PSHeader/PS.h>
 #import "../EmojiLibrary/PSEmojiUtilities.h"
 #import "../EmojiLibrary/Header.h"
 #import <dlfcn.h>
@@ -51,14 +51,6 @@ static NSString *overrideResourceNameNS(NSString *resourceName, NSString *subdir
 
 - (NSURL *)URLForResource:(NSString *)resourceName withExtension:(NSString *)extension subdirectory:(NSString *)subdirectory {
     NSString *newResourceName = overrideResourceNameNS(resourceName, subdirectory);
-    // if (IS_IOS_OR_NEWER(iOS_15_0)) {
-    //     NSURL *orig = %orig;
-    //     NSString *absoluteURL = [orig.absoluteString
-    //         stringByReplacingOccurrencesOfString:@"/System/Library/PrivateFrameworks/CoreEmoji.framework"
-    //         withString:@"/var/jb/System/Library/PrivateFrameworks/CoreEmoji.framework"];
-    //     absoluteURL = [absoluteURL stringByReplacingOccurrencesOfString:resourceName withString:newResourceName];
-    //     return [NSURL URLWithString:absoluteURL];
-    // }
     NSURL *url = %orig(newResourceName, extension, subdirectory);
     return url ?: %orig;
 }
@@ -321,8 +313,6 @@ static CFURLRef getRedirectedUrl(CFURLRef url, CFStringRef const resourceName, C
 %group CoreEmoji_Bundle
 
 %hookf(CFURLRef, copyResourceURLFromFrameworkBundle, CFStringRef const resourceName, CFStringRef const resourceType, CFLocaleRef const locale) {
-    // if (IS_IOS_OR_NEWER(iOS_15_0))
-    //     return getRedirectedUrl(%orig, resourceName, resourceType, NULL);
     CFStringRef newResourceName = overrideResourceName(resourceName, resourceType, NULL);
     CFURLRef url = %orig(newResourceName, resourceType, locale);
     if (freeFlag && newResourceName)

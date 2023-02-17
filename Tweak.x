@@ -1,7 +1,7 @@
 #define CHECK_TARGET
 #define CHECK_WHITELIST
 #import <dlfcn.h>
-#import "../PS.h"
+#import <PSHeader/PS.h>
 
 %ctor {
     if (_isTarget(TargetTypeApps | TargetTypeGenericExtensions, @[@"com.apple.WebKit.WebContent", @"kbd"], nil)) {
