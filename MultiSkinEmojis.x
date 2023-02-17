@@ -1,4 +1,4 @@
-#import "../PSHeader/iOSVersions.h"
+#import <PSHeader/iOSVersions.h>
 #import "../EmojiLibrary/PSEmojiUtilities.h"
 #import "../EmojiLibrary/EmojiUIKit/EmojiUIKit.h"
 
