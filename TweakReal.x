@@ -258,8 +258,7 @@ static NSString *overrideResourceNameNS(NSString *resourceName, NSString *subdir
 
 %end
 
-static BOOL freeFlag = NO;
-static CFStringRef overrideResourceName(CFStringRef const resourceName, CFStringRef const resourceType, CFStringRef const folder) {
+static CFStringRef overrideResourceName(CFStringRef const resourceName, CFStringRef const resourceType, CFStringRef const folder, BOOL *freeFlag) {
     CFMutableStringRef newResourceName = (CFMutableStringRef)resourceName;
     BOOL gate = resourceName && resourceType;
     BOOL byExtension = CFStringEqual(resourceType, CFSTR("dat"))
@@ -271,14 +270,14 @@ static CFStringRef overrideResourceName(CFStringRef const resourceName, CFString
             || CFStringEqual(resourceName, CFSTR("document_index"))
             || CFStringEqual(resourceName, CFSTR("document_index_stemmed"));
     BOOL byFolder = folder && (CFStringEqual(folder, CFSTR("SearchEngineOverrideLists")) || CFStringEqual(folder, CFSTR("SearchModel-en")));
-    freeFlag = NO;
+    *freeFlag = NO;
     if (gate && (byName || byExtension || byFolder)) {
         if (CFStringEqual(resourceName, CFSTR("emojimeta")))
             newResourceName = (CFMutableStringRef)(IS_IOS_OR_NEWER(iOS_12_1) ? CFSTR("emojimeta_modern") : CFSTR("emojimeta_legacy"));
         else {
             newResourceName = CFStringCreateMutableCopy(kCFAllocatorDefault, CFStringGetLength(resourceName), resourceName);
             CFStringAppend(newResourceName, CFSTR("2"));
-            freeFlag = YES;
+            *freeFlag = YES;
         }
     }
     return newResourceName;
@@ -297,7 +296,8 @@ static CFURLRef getRedirectedUrl(CFURLRef url, CFStringRef const resourceName, C
         CFSTR("/var/jb/System/Library/PrivateFrameworks/CoreEmoji.framework"),
         CFRangeMake(0, CFStringGetLength(absoluteString)),
         0);
-    CFStringRef newResourceName = overrideResourceName(resourceName, resourceType, folder);
+    BOOL freeFlag = NO;
+    CFStringRef newResourceName = overrideResourceName(resourceName, resourceType, folder, &freeFlag);
     CFStringFindAndReplace(
         absoluteString,
         resourceName,
@@ -313,7 +313,8 @@ static CFURLRef getRedirectedUrl(CFURLRef url, CFStringRef const resourceName, C
 %group CoreEmoji_Bundle
 
 %hookf(CFURLRef, copyResourceURLFromFrameworkBundle, CFStringRef const resourceName, CFStringRef const resourceType, CFLocaleRef const locale) {
-    CFStringRef newResourceName = overrideResourceName(resourceName, resourceType, NULL);
+    BOOL freeFlag = NO;
+    CFStringRef newResourceName = overrideResourceName(resourceName, resourceType, NULL, &freeFlag);
     CFURLRef url = %orig(newResourceName, resourceType, locale);
     if (freeFlag && newResourceName)
         CFRelease(newResourceName);
@@ -325,13 +326,13 @@ static CFURLRef getRedirectedUrl(CFURLRef url, CFStringRef const resourceName, C
 %group CoreEmoji_Bundle2
 
 %hookf(CFURLRef, copyResourceURLFromFrameworkBundle2, CFStringRef const resourceName, CFStringRef const resourceType, CFStringRef const folder, CFStringRef const locale) {
-    if (IS_IOS_OR_NEWER(iOS_15_0))
-        return getRedirectedUrl(%orig, resourceName, resourceType, folder);
-    CFStringRef newResourceName = overrideResourceName(resourceName, resourceType, folder);
+    BOOL freeFlag = NO;
+    CFStringRef newResourceName = overrideResourceName(resourceName, resourceType, folder, &freeFlag);
     CFURLRef url = %orig(newResourceName, resourceType, folder, locale);
     if (freeFlag && newResourceName)
         CFRelease(newResourceName);
-    return url ? url : %orig;
+    CFURLRef newUrl = url ?: getRedirectedUrl(%orig, resourceName, resourceType, folder);
+    return newUrl;
 }
 
 %end
