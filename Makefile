@@ -4,8 +4,7 @@ ifeq ($(SIMULATOR),1)
 	TARGET = simulator:clang:latest:12.0
 	ARCHS = x86_64
 else
-	TARGET = iphone:clang:14.5:12.0
-	ARCHS = arm64 arm64e
+	TARGET = iphone:clang:15.5:12.0
 endif
 
 include $(THEOS)/makefiles/common.mk

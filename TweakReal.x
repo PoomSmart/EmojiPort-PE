@@ -1,7 +1,8 @@
+#import <dlfcn.h>
 #import <PSHeader/PS.h>
 #import "../EmojiLibrary/PSEmojiUtilities.h"
 #import "../EmojiLibrary/Header.h"
-#import <dlfcn.h>
+#import <HBLog.h>
 
 %config(generator=MobileSubstrate)
 
@@ -151,8 +152,9 @@ static NSString *overrideResourceNameNS(NSString *resourceName, NSString *subdir
         emojis = [PSEmojiUtilities ObjectsEmoji];
     else if ([identifier isEqualToString:@"EMFEmojiCategorySymbols"])
         emojis = [PSEmojiUtilities SymbolsEmoji];
+    Class EMFEmojiTokenClass = %c(EMFEmojiToken);
     for (NSString *emoji in emojis)
-        [tokens addObject:[%c(EMFEmojiToken) emojiTokenWithString:emoji localeData:localeData]];
+        [tokens addObject:[EMFEmojiTokenClass emojiTokenWithString:emoji localeData:localeData]];
     return tokens;
 }
 
@@ -268,7 +270,8 @@ static CFStringRef overrideResourceName(CFStringRef const resourceName, CFString
     BOOL byName = CFStringEqual(resourceName, CFSTR("term_index"))
             || CFStringEqual(resourceName, CFSTR("term_index_stemmed"))
             || CFStringEqual(resourceName, CFSTR("document_index"))
-            || CFStringEqual(resourceName, CFSTR("document_index_stemmed"));
+            || CFStringEqual(resourceName, CFSTR("document_index_stemmed"))
+            || CFStringEqual(resourceName, CFSTR("vocabulary"));
     BOOL byFolder = folder && (CFStringEqual(folder, CFSTR("SearchEngineOverrideLists")) || CFStringEqual(folder, CFSTR("SearchModel-en")));
     *freeFlag = NO;
     if (gate && (byName || byExtension || byFolder)) {
