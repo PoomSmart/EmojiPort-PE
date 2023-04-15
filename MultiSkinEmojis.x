@@ -50,10 +50,11 @@
 - (void)_configureFamilyMemberWellStackViews {
     if (self.baseEmojiString) {
         NSInteger section = 0;
+        Class UIKeyboardEmojiWellViewClass = %c(UIKeyboardEmojiWellView);
         for (NSArray <NSString *> *row in self.variantDisplayRows) {
             __block NSMutableArray <UIKeyboardEmojiWellView *> *subviews = [NSMutableArray array];
             [row enumerateObjectsUsingBlock:^(NSString *item, NSUInteger idx, BOOL *stop) {
-                UIKeyboardEmojiWellView *wellView = [[%c(UIKeyboardEmojiWellView) alloc] initWithFrame:CGRectZero];
+                UIKeyboardEmojiWellView *wellView = [[UIKeyboardEmojiWellViewClass alloc] initWithFrame:CGRectZero];
                 UIColor *color = [[self class] _selectionAndSeparatorColorForDarkMode:self.usesDarkStyle];
                 wellView.selectionBackgroundColor = color;
                 [wellView setStringRepresentation:item silhouette:(section == 0) + 1];
