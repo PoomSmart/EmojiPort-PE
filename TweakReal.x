@@ -7,17 +7,18 @@
 %config(generator=MobileSubstrate)
 
 BOOL overrideIsCoupleMultiSkinToneEmoji = NO;
+Class PSEmojiUtilitiesClass;
 
 %group UIKit
 
 %hook UIKeyboardEmojiCategory
 
 + (NSUInteger)hasVariantsForEmoji:(NSString *)emojiString {
-    return [PSEmojiUtilities hasVariantsForEmoji:emojiString];
+    return [PSEmojiUtilitiesClass hasVariantsForEmoji:emojiString];
 }
 
 + (NSString *)professionSkinToneEmojiBaseKey:(NSString *)emojiString {
-    return [PSEmojiUtilities professionSkinToneEmojiBaseKey:emojiString];
+    return [PSEmojiUtilitiesClass professionSkinToneEmojiBaseKey:emojiString];
 }
 
 %end
@@ -25,11 +26,11 @@ BOOL overrideIsCoupleMultiSkinToneEmoji = NO;
 %hook UIKeyboardEmojiCollectionInputView
 
 - (NSString *)emojiBaseString:(NSString *)emojiString {
-    return [PSEmojiUtilities emojiBaseString:emojiString];
+    return [PSEmojiUtilitiesClass emojiBaseString:emojiString];
 }
 
 - (BOOL)genderEmojiBaseStringNeedVariantSelector:(NSString *)emojiBaseString {
-    return [PSEmojiUtilities genderEmojiBaseStringNeedVariantSelector:emojiBaseString];
+    return [PSEmojiUtilitiesClass genderEmojiBaseStringNeedVariantSelector:emojiBaseString];
 }
 
 %end
@@ -61,75 +62,75 @@ static NSString *overrideResourceNameNS(NSString *resourceName, NSString *subdir
 %hook EMFEmojiCategory
 
 + (NSArray <NSString *> *)PeopleEmoji {
-    return [PSEmojiUtilities PeopleEmoji];
+    return [PSEmojiUtilitiesClass PeopleEmoji];
 }
 
 + (NSArray <NSString *> *)NatureEmoji {
-    return [PSEmojiUtilities NatureEmoji];
+    return [PSEmojiUtilitiesClass NatureEmoji];
 }
 
 + (NSArray <NSString *> *)FoodAndDrinkEmoji {
-    return [PSEmojiUtilities FoodAndDrinkEmoji];
+    return [PSEmojiUtilitiesClass FoodAndDrinkEmoji];
 }
 
 + (NSArray <NSString *> *)ActivityEmoji {
-    return [PSEmojiUtilities ActivityEmoji];
+    return [PSEmojiUtilitiesClass ActivityEmoji];
 }
 
 + (NSArray <NSString *> *)CelebrationEmoji {
-    return [PSEmojiUtilities CelebrationEmoji];
+    return [PSEmojiUtilitiesClass CelebrationEmoji];
 }
 
 + (NSArray <NSString *> *)TravelAndPlacesEmoji {
-    return [PSEmojiUtilities TravelAndPlacesEmoji];
+    return [PSEmojiUtilitiesClass TravelAndPlacesEmoji];
 }
 
 + (NSArray <NSString *> *)ObjectsEmoji {
-    return [PSEmojiUtilities ObjectsEmoji];
+    return [PSEmojiUtilitiesClass ObjectsEmoji];
 }
 
 + (NSArray <NSString *> *)SymbolsEmoji {
-    return [PSEmojiUtilities SymbolsEmoji];
+    return [PSEmojiUtilitiesClass SymbolsEmoji];
 }
 
 + (NSArray <NSString *> *)DingbatsVariantEmoji {
-    return [PSEmojiUtilities DingbatVariantsEmoji];
+    return [PSEmojiUtilitiesClass DingbatVariantsEmoji];
 }
 
 + (NSArray <NSString *> *)NoneVariantEmoji {
-    return [PSEmojiUtilities NoneVariantEmoji];
+    return [PSEmojiUtilitiesClass NoneVariantEmoji];
 }
 
 + (NSArray <NSString *> *)SkinToneEmoji {
-    return [PSEmojiUtilities SkinToneEmoji];
+    return [PSEmojiUtilitiesClass SkinToneEmoji];
 }
 
 + (NSArray <NSString *> *)GenderEmoji {
-    return [PSEmojiUtilities GenderEmoji];
+    return [PSEmojiUtilitiesClass GenderEmoji];
 }
 
 + (NSArray <NSString *> *)ProfessionEmoji {
-    return [PSEmojiUtilities ProfessionEmoji];
+    return [PSEmojiUtilitiesClass ProfessionEmoji];
 }
 
 + (NSArray <NSString *> *)ProfessionWithoutSkinToneEmoji {
-    return [PSEmojiUtilities ProfessionWithoutSkinToneEmoji];
+    return [PSEmojiUtilitiesClass ProfessionWithoutSkinToneEmoji];
 }
 
 + (NSArray <NSString *> *)CoupleMultiSkinToneEmoji {
-    return [PSEmojiUtilities CoupleMultiSkinToneEmoji];
+    return [PSEmojiUtilitiesClass CoupleMultiSkinToneEmoji];
 }
 
 + (NSArray <NSString *> *)MultiPersonFamilySkinToneEmoji {
-    return [PSEmojiUtilities MultiPersonFamilySkinToneEmoji];
+    return [PSEmojiUtilitiesClass MultiPersonFamilySkinToneEmoji];
 }
 
 + (NSArray <NSString *> *)ExtendedCoupleMultiSkinToneEmoji {
-    return [PSEmojiUtilities ExtendedCoupleMultiSkinToneEmoji];
+    return [PSEmojiUtilitiesClass ExtendedCoupleMultiSkinToneEmoji];
 }
 
 + (NSArray <NSString *> *)computeEmojiFlagsSortedByLanguage {
-    return [PSEmojiUtilities FlagsEmoji];
+    return [PSEmojiUtilitiesClass FlagsEmoji];
 }
 
 - (NSMutableArray <EMFEmojiToken *> *)emojiTokensForLocaleData:(EMFEmojiLocaleData *)localeData {
@@ -137,21 +138,21 @@ static NSString *overrideResourceNameNS(NSString *resourceName, NSString *subdir
     NSMutableArray <EMFEmojiToken *> *tokens = [NSMutableArray array];
     NSArray <NSString *> *emojis = nil;
     if ([identifier isEqualToString:@"EMFEmojiCategoryPrepopulated"])
-        emojis = [PSEmojiUtilities PrepolulatedEmoji];
+        emojis = [PSEmojiUtilitiesClass PrepolulatedEmoji];
     else if ([identifier isEqualToString:@"EMFEmojiCategoryPeople"])
-        emojis = [PSEmojiUtilities PeopleEmoji];
+        emojis = [PSEmojiUtilitiesClass PeopleEmoji];
     else if ([identifier isEqualToString:@"EMFEmojiCategoryNature"])
-        emojis = [PSEmojiUtilities NatureEmoji];
+        emojis = [PSEmojiUtilitiesClass NatureEmoji];
     else if ([identifier isEqualToString:@"EMFEmojiCategoryFoodAndDrink"])
-        emojis = [PSEmojiUtilities FoodAndDrinkEmoji];
+        emojis = [PSEmojiUtilitiesClass FoodAndDrinkEmoji];
     else if ([identifier isEqualToString:@"EMFEmojiCategoryActivity"])
-        emojis = [PSEmojiUtilities ActivityEmoji];
+        emojis = [PSEmojiUtilitiesClass ActivityEmoji];
     else if ([identifier isEqualToString:@"EMFEmojiCategoryTravelAndPlaces"])
-        emojis = [PSEmojiUtilities TravelAndPlacesEmoji];
+        emojis = [PSEmojiUtilitiesClass TravelAndPlacesEmoji];
     else if ([identifier isEqualToString:@"EMFEmojiCategoryObjects"])
-        emojis = [PSEmojiUtilities ObjectsEmoji];
+        emojis = [PSEmojiUtilitiesClass ObjectsEmoji];
     else if ([identifier isEqualToString:@"EMFEmojiCategorySymbols"])
-        emojis = [PSEmojiUtilities SymbolsEmoji];
+        emojis = [PSEmojiUtilitiesClass SymbolsEmoji];
     Class EMFEmojiTokenClass = %c(EMFEmojiToken);
     for (NSString *emoji in emojis)
         [tokens addObject:[EMFEmojiTokenClass emojiTokenWithString:emoji localeData:localeData]];
@@ -161,17 +162,17 @@ static NSString *overrideResourceNameNS(NSString *resourceName, NSString *subdir
 + (BOOL)_isCoupleMultiSkinToneEmoji:(NSString *)emojiString {
     if (overrideIsCoupleMultiSkinToneEmoji) {
         overrideIsCoupleMultiSkinToneEmoji = NO;
-        return [PSEmojiUtilities supportsCoupleSkinToneSelection:emojiString];
+        return [PSEmojiUtilitiesClass supportsCoupleSkinToneSelection:emojiString];
     }
-    return [PSEmojiUtilities isCoupleMultiSkinToneEmoji:emojiString];
+    return [PSEmojiUtilitiesClass isCoupleMultiSkinToneEmoji:emojiString];
 }
 
 + (BOOL)_isComposedCoupleMultiSkinToneEmoji:(NSString *)emojiString {
-    return [PSEmojiUtilities isComposedCoupleMultiSkinToneEmoji:emojiString];
+    return [PSEmojiUtilitiesClass isComposedCoupleMultiSkinToneEmoji:emojiString];
 }
 
 + (BOOL)_supportsCoupleSkinToneSelection:(NSString *)emojiString {
-    return [PSEmojiUtilities supportsCoupleSkinToneSelection:emojiString];
+    return [PSEmojiUtilitiesClass supportsCoupleSkinToneSelection:emojiString];
 }
 
 %end
@@ -179,7 +180,7 @@ static NSString *overrideResourceNameNS(NSString *resourceName, NSString *subdir
 %hook EMFEmojiPreferences
 
 + (NSArray <NSString *> *)_cachedFlagCategoryEmoji:(id)arg1 {
-    return [PSEmojiUtilities FlagsEmoji];
+    return [PSEmojiUtilitiesClass FlagsEmoji];
 }
 
 %end
@@ -197,55 +198,55 @@ static NSString *overrideResourceNameNS(NSString *resourceName, NSString *subdir
 %hook EMFStringUtilities
 
 + (NSString *)_baseStringForEmojiString:(NSString *)emojiString {
-    return [PSEmojiUtilities emojiBaseString:emojiString];
+    return [PSEmojiUtilitiesClass emojiBaseString:emojiString];
 }
 
 + (BOOL)_genderEmojiBaseStringNeedVariantSelector:(NSString *)emojiBaseString {
-    return [PSEmojiUtilities genderEmojiBaseStringNeedVariantSelector:emojiBaseString];
+    return [PSEmojiUtilitiesClass genderEmojiBaseStringNeedVariantSelector:emojiBaseString];
 }
 
 + (BOOL)_hasSkinToneVariantsForString:(NSString *)emojiString {
-    return [PSEmojiUtilities hasSkinToneVariants:emojiString];
+    return [PSEmojiUtilitiesClass hasSkinToneVariants:emojiString];
 }
 
 + (NSString *)_multiPersonStringForString:(NSString *)emojiString skinToneVariantSpecifier:(NSArray <NSString *> *)specifier {
-    return [PSEmojiUtilities multiPersonStringForString:emojiString skinToneVariantSpecifier:specifier];
+    return [PSEmojiUtilitiesClass multiPersonStringForString:emojiString skinToneVariantSpecifier:specifier];
 }
 
 + (NSString *)_joiningStringForCoupleString:(NSString *)emojiString {
-    return [PSEmojiUtilities joiningStringForCoupleString:emojiString];
+    return [PSEmojiUtilitiesClass joiningStringForCoupleString:emojiString];
 }
 
 + (NSArray <NSString *> *)_skinToneSpecifiersForString:(NSString *)emojiString {
-    return [PSEmojiUtilities skinToneSpecifiersForString:emojiString];
+    return [PSEmojiUtilitiesClass skinToneSpecifiersForString:emojiString];
 }
 
 + (NSArray <NSString *> *)_skinToneVariantsForString:(NSString *)emojiString {
-    return [PSEmojiUtilities skinToneVariants:emojiString withSelf:YES];
+    return [PSEmojiUtilitiesClass skinToneVariants:emojiString withSelf:YES];
 }
 
 + (NSArray <NSArray <NSString *> *> *)_skinToneChooserVariantsForString:(NSString *)emojiString {
-    return [PSEmojiUtilities skinToneChooserVariantsForString:emojiString usesSilhouetteSpecifiers:YES];
+    return [PSEmojiUtilitiesClass skinToneChooserVariantsForString:emojiString usesSilhouetteSpecifiers:YES];
 }
 
 + (NSArray <NSArray <NSString *> *> *)_skinToneChooserVariantsForString:(NSString *)emojiString usesSilhouetteSpecifiers:(BOOL)silhouette {
-    return [PSEmojiUtilities skinToneChooserVariantsForString:emojiString usesSilhouetteSpecifiers:silhouette];
+    return [PSEmojiUtilitiesClass skinToneChooserVariantsForString:emojiString usesSilhouetteSpecifiers:silhouette];
 }
 
 + (NSArray <NSArray <NSString *> *> *)_skinToneChooserVariantsForHandHoldingCoupleType:(PSEmojiMultiSkinType)coupleType {
-    return [PSEmojiUtilities skinToneChooserVariantsForHandHoldingCoupleType:coupleType];
+    return [PSEmojiUtilitiesClass skinToneChooserVariantsForHandHoldingCoupleType:coupleType];
 }
 
 + (NSArray <NSArray <NSString *> *> *)_skinToneChooserArraysForCoupleType:(PSEmojiMultiSkinType)coupleType joiner:(NSString *)joiner {
-    return [PSEmojiUtilities skinToneChooserArraysForCoupleType:coupleType joiner:joiner];
+    return [PSEmojiUtilitiesClass skinToneChooserArraysForCoupleType:coupleType joiner:joiner];
 }
 
 + (NSArray <NSString *> *)_tokenizedMultiPersonFromString:(NSString *)emojiString {
-    return [PSEmojiUtilities tokenizedMultiPersonFromString:emojiString];
+    return [PSEmojiUtilitiesClass tokenizedMultiPersonFromString:emojiString];
 }
 
 + (PSEmojiMultiSkinType)multiPersonTypeForString:(NSString *)string {
-    return [PSEmojiUtilities multiPersonTypeForString:string];
+    return [PSEmojiUtilitiesClass multiPersonTypeForString:string];
 }
 
 %end
@@ -253,7 +254,7 @@ static NSString *overrideResourceNameNS(NSString *resourceName, NSString *subdir
 %hook EMFEmojiToken
 
 - (BOOL)supportsSkinToneVariants {
-    return [PSEmojiUtilities hasSkinToneVariants:[self valueForKey:@"_string"]];
+    return [PSEmojiUtilitiesClass hasSkinToneVariants:[self valueForKey:@"_string"]];
 }
 
 %end
@@ -341,6 +342,8 @@ static CFURLRef getRedirectedUrl(CFURLRef url, CFStringRef const resourceName, C
 %end
 
 %ctor {
+    dlopen(realPath2(@"/usr/lib/libEmojiLibrary.dylib"), RTLD_NOW);
+    PSEmojiUtilitiesClass = %c(PSEmojiUtilities);
     const char *coreEmoji = realPath2(@"/System/Library/PrivateFrameworks/CoreEmoji.framework/CoreEmoji");
     dlopen(coreEmoji, RTLD_NOW);
     dlopen(realPath2(@"/System/Library/PrivateFrameworks/EmojiFoundation.framework/EmojiFoundation"), RTLD_NOW);

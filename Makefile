@@ -16,7 +16,6 @@ $(LIBRARY_NAME)_FILES = TweakReal.x FamilyPicker.x MultiSkinEmojis.x
 $(LIBRARY_NAME)_CFLAGS = -fobjc-arc
 $(LIBRARY_NAME)_INSTALL_PATH = /Library/MobileSubstrate/DynamicLibraries/EmojiPort
 $(LIBRARY_NAME)_EXTRA_FRAMEWORKS = CydiaSubstrate
-$(LIBRARY_NAME)_LIBRARIES = EmojiLibrary
 $(LIBRARY_NAME)_USE_SUBSTRATE = 1
 
 include $(THEOS_MAKE_PATH)/library.mk
