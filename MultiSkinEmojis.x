@@ -4,8 +4,6 @@
 #import "../EmojiLibrary/PSEmojiUtilities.h"
 #import "../EmojiLibrary/EmojiUIKit/EmojiUIKit.h"
 
-Class PSEmojiUtilitiesClass;
-
 %hook UIKeyboardEmojiFamilyConfigurationView
 
 %property (retain, nonatomic) NSArray *variantDisplayRows;
@@ -23,18 +21,18 @@ Class PSEmojiUtilitiesClass;
 - (void)_updatePreviewWellForCurrentSelection {
     NSArray *configuration = [self _currentlySelectedSkinToneConfiguration];
     NSUInteger silhouette = [self _silhouetteFromCurrentSelections];
-    NSString *representation = [PSEmojiUtilitiesClass multiPersonStringForString:self.baseEmojiString skinToneVariantSpecifier:configuration];
+    NSString *representation = [SoftPSEmojiUtilities multiPersonStringForString:self.baseEmojiString skinToneVariantSpecifier:configuration];
     UIKeyboardEmojiWellView *wellView = self.configuredWellView;
     [wellView setStringRepresentation:representation silhouette:silhouette];
 }
 
 - (void)_configureSkinToneVariantSpecifiersForBaseString:(NSString *)baseEmojiString {
-    NSArray <NSArray <NSString *> *> *rows = [PSEmojiUtilitiesClass skinToneChooserVariantsForString:baseEmojiString];
+    NSArray <NSArray <NSString *> *> *rows = [SoftPSEmojiUtilities skinToneChooserVariantsForString:baseEmojiString];
     NSMutableArray <NSMutableArray <NSString *> *> *array = [NSMutableArray array];
     for (NSArray <NSString *> *row in rows) {
         NSMutableArray *brray = [NSMutableArray array];
         for (NSString *variant in row) {
-            NSArray <NSString *> *specifiers = [PSEmojiUtilitiesClass skinToneSpecifiersForString:variant];
+            NSArray <NSString *> *specifiers = [SoftPSEmojiUtilities skinToneSpecifiersForString:variant];
             NSString *specifier = [specifiers firstObject];
             [brray addObject:@[specifier, specifier]];
         }
@@ -42,7 +40,7 @@ Class PSEmojiUtilitiesClass;
     }
     self.baseEmojiString = baseEmojiString;
     self.skinToneVariantRows = array;
-    self.variantDisplayRows = [PSEmojiUtilitiesClass coupleSkinToneChooserVariantsForString:baseEmojiString];
+    self.variantDisplayRows = [SoftPSEmojiUtilities coupleSkinToneChooserVariantsForString:baseEmojiString];
     NSMutableArray *indices = [NSMutableArray array];
     for (int i = 0; i < array.count; ++i) {
         [indices addObject:@(NSNotFound)];
@@ -138,7 +136,8 @@ Class PSEmojiUtilitiesClass;
 %ctor {
     if (!IS_IOS_BETWEEN_EEX(iOS_13_2, iOS_14_5))
         return;
+#if TARGET_OS_SIMULATOR
     dlopen(realPath2(@"/usr/lib/libEmojiLibrary.dylib"), RTLD_NOW);
-    PSEmojiUtilitiesClass = %c(PSEmojiUtilities);
+#endif
     %init;
 }

@@ -6,19 +6,18 @@
 #import "../EmojiLibrary/Header.h"
 
 BOOL overrideSkinTone = NO;
-Class PSEmojiUtilitiesClass;
 
 %hook EMFEmojiToken
 
 - (BOOL)supportsSkinToneVariants {
-    return overrideSkinTone && [PSEmojiUtilitiesClass isCoupleMultiSkinToneEmoji:self.string] ? YES : %orig;
+    return overrideSkinTone && [SoftPSEmojiUtilities isCoupleMultiSkinToneEmoji:self.string] ? YES : %orig;
 }
 
 - (NSArray <NSString *> *)_skinToneVariantStrings {
     NSString *emojiString = self.string;
-    if (![PSEmojiUtilitiesClass isCoupleMultiSkinToneEmoji:emojiString])
+    if (![SoftPSEmojiUtilities isCoupleMultiSkinToneEmoji:emojiString])
         return %orig;
-    NSMutableArray <NSString *> *variants = [PSEmojiUtilitiesClass skinToneVariants:emojiString];
+    NSMutableArray <NSString *> *variants = [SoftPSEmojiUtilities skinToneVariants:emojiString];
     if (variants) {
         if (!IS_IPAD) {
             [variants insertObject:emojiString atIndex:0];
@@ -42,7 +41,7 @@ Class PSEmojiUtilitiesClass;
 %hook UIKBRenderFactory
 
 - (void)modifyTraitsForDividerVariant:(id)variant withKey:(UIKBTree *)key {
-    if ([PSEmojiUtilitiesClass isCoupleMultiSkinToneEmoji:key.displayString])
+    if ([SoftPSEmojiUtilities isCoupleMultiSkinToneEmoji:key.displayString])
         return;
     %orig;
 }
@@ -52,7 +51,7 @@ Class PSEmojiUtilitiesClass;
 %hook UIKBRenderFactoryiPad
 
 - (NSInteger)rowLimitForKey:(UIKBTree *)tree {
-    if ([tree.name isEqualToString:@"EmojiPopupKey"] && [PSEmojiUtilitiesClass isCoupleMultiSkinToneEmoji:tree.displayString])
+    if ([tree.name isEqualToString:@"EmojiPopupKey"] && [SoftPSEmojiUtilities isCoupleMultiSkinToneEmoji:tree.displayString])
         return 6;
     return %orig;
 }
@@ -62,7 +61,7 @@ Class PSEmojiUtilitiesClass;
 %hook UIKBRenderFactoryiPhone
 
 - (void)_configureTraitsForPopupStyle:(id)style withKey:(UIKBTree *)key onKeyplane:(id)keyplane {
-    BOOL isEmoji = [key.name isEqualToString:@"EmojiPopupKey"] && [PSEmojiUtilitiesClass isCoupleMultiSkinToneEmoji:key.displayString];
+    BOOL isEmoji = [key.name isEqualToString:@"EmojiPopupKey"] && [SoftPSEmojiUtilities isCoupleMultiSkinToneEmoji:key.displayString];
     if (isEmoji)
         key.name = @"EmojiPopupKey2";
     %orig(style, key, keyplane);
@@ -78,7 +77,7 @@ Class PSEmojiUtilitiesClass;
     overrideSkinTone = YES;
     UIKBTree *tree = %orig;
     overrideSkinTone = NO;
-    if ([PSEmojiUtilitiesClass isCoupleMultiSkinToneEmoji:tree.displayString])
+    if ([SoftPSEmojiUtilities isCoupleMultiSkinToneEmoji:tree.displayString])
         [tree.subtrees removeObjectAtIndex:1];
     return tree;
 }
@@ -88,8 +87,9 @@ Class PSEmojiUtilitiesClass;
 %ctor {
     if (IS_IOS_OR_NEWER(iOS_13_2))
         return;
+#if TARGET_OS_SIMULATOR
     dlopen(realPath2(@"/usr/lib/libEmojiLibrary.dylib"), RTLD_NOW);
-    PSEmojiUtilitiesClass = %c(PSEmojiUtilities);
+#endif
     dlopen(realPath2(@"/System/Library/PrivateFrameworks/EmojiFoundation.framework/EmojiFoundation"), RTLD_NOW);
     %init;
 }
