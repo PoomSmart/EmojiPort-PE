@@ -276,7 +276,7 @@ static CFStringRef overrideResourceName(CFStringRef const resourceName, CFString
     *freeFlag = NO;
     if (gate && (byName || byExtension || byFolder)) {
         if (CFStringEqual(resourceName, CFSTR("emojimeta")))
-            newResourceName = (CFMutableStringRef)(IS_IOS_OR_NEWER(iOS_12_1) ? CFSTR("emojimeta_modern") : CFSTR("emojimeta_legacy"));
+            newResourceName = (CFMutableStringRef)(IS_IOS_OR_NEWER(iOS_12_1) ? CFSTR("emojimeta_2") : CFSTR("emojimeta_1"));
         else {
             newResourceName = CFStringCreateMutableCopy(kCFAllocatorDefault, CFStringGetLength(resourceName), resourceName);
             CFStringAppend(newResourceName, CFSTR("2"));
