@@ -277,9 +277,14 @@ static CFStringRef overrideResourceName(CFStringRef const resourceName, CFString
     if (gate && (byName || byExtension || byFolder)) {
         if (CFStringEqual(resourceName, CFSTR("emojimeta")))
             newResourceName = (CFMutableStringRef)(IS_IOS_OR_NEWER(iOS_12_1) ? CFSTR("emojimeta_2") : CFSTR("emojimeta_1"));
+        else if (CFStringEqual(resourceName, CFSTR("Emoticons")))
+            newResourceName = (CFMutableStringRef)(IS_IOS_OR_NEWER(iOS_17_0) ? CFSTR("Emoticons2") : resourceName);
         else {
             newResourceName = CFStringCreateMutableCopy(kCFAllocatorDefault, CFStringGetLength(resourceName), resourceName);
-            CFStringAppend(newResourceName, CFSTR("2"));
+            if (CFStringEqual(resourceName, CFSTR("FindReplace")) || CFStringEqual(resourceName, CFSTR("FindReplace-en")) || CFStringEqual(resourceName, CFSTR("CharacterPicker")))
+                CFStringAppend(newResourceName, IS_IOS_OR_NEWER(iOS_17_0) ? CFSTR("2") : CFSTR("_16"));
+            else
+                CFStringAppend(newResourceName, CFSTR("2"));
             *freeFlag = YES;
         }
     }
