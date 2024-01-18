@@ -7,7 +7,7 @@ else
 	ifeq ($(THEOS_PACKAGE_SCHEME),rootless)
 		TARGET = iphone:clang:latest:14.0
 	else
-		TARGET = iphone:clang:15.5:12.0
+		TARGET = iphone:clang:latest:12.0
 	endif
 endif
 

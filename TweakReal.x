@@ -1,8 +1,7 @@
 #import <dlfcn.h>
 #import <PSHeader/PS.h>
-#import "../EmojiLibrary/PSEmojiUtilities.h"
-#import "../EmojiLibrary/Header.h"
-#import <HBLog.h>
+#import <EmojiLibrary/PSEmojiUtilities.h>
+#import <EmojiLibrary/Header.h>
 
 %config(generator=MobileSubstrate)
 

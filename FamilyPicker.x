@@ -2,8 +2,8 @@
 #import <theos/IOSMacros.h>
 #import <version.h>
 #import <dlfcn.h>
-#import "../EmojiLibrary/PSEmojiUtilities.h"
-#import "../EmojiLibrary/Header.h"
+#import <EmojiLibrary/PSEmojiUtilities.h>
+#import <EmojiLibrary/Header.h>
 
 BOOL overrideSkinTone = NO;
 
