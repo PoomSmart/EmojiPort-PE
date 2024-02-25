@@ -1,9 +1,9 @@
+#import <EmojiLibrary/PSEmojiUtilities.h>
+#import <EmojiLibrary/Header.h>
 #import <PSHeader/Misc.h>
 #import <theos/IOSMacros.h>
 #import <version.h>
 #import <dlfcn.h>
-#import <EmojiLibrary/PSEmojiUtilities.h>
-#import <EmojiLibrary/Header.h>
 
 BOOL overrideSkinTone = NO;
 
@@ -17,7 +17,7 @@ BOOL overrideSkinTone = NO;
     NSString *emojiString = self.string;
     if (![SoftPSEmojiUtilities isCoupleMultiSkinToneEmoji:emojiString])
         return %orig;
-    NSMutableArray <NSString *> *variants = [SoftPSEmojiUtilities skinToneVariants:emojiString];
+    NSMutableArray <NSString *> *variants = [SoftPSEmojiUtilities skinToneVariantsForString:emojiString withSelf:NO];
     if (variants) {
         if (!IS_IPAD) {
             [variants insertObject:emojiString atIndex:0];

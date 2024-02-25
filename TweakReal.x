@@ -220,7 +220,7 @@ static NSString *overrideResourceNameNS(NSString *resourceName, NSString *subdir
 }
 
 + (NSArray <NSString *> *)_skinToneVariantsForString:(NSString *)emojiString {
-    return [SoftPSEmojiUtilities skinToneVariants:emojiString withSelf:YES];
+    return [SoftPSEmojiUtilities skinToneVariantsForString:emojiString];
 }
 
 + (NSArray <NSArray <NSString *> *> *)_skinToneChooserVariantsForString:(NSString *)emojiString {
