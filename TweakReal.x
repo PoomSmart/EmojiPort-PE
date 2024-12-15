@@ -136,7 +136,7 @@ static NSString *overrideResourceNameNS(NSString *resourceName, NSString *subdir
     NSMutableArray <EMFEmojiToken *> *tokens = [NSMutableArray array];
     NSArray <NSString *> *emojis = nil;
     if ([identifier isEqualToString:@"EMFEmojiCategoryPrepopulated"])
-        emojis = [SoftPSEmojiUtilities PrepolulatedEmoji];
+        emojis = [SoftPSEmojiUtilities PrepopulatedEmoji];
     else if ([identifier isEqualToString:@"EMFEmojiCategoryPeople"])
         emojis = [SoftPSEmojiUtilities PeopleEmoji];
     else if ([identifier isEqualToString:@"EMFEmojiCategoryNature"])

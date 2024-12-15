@@ -1,4 +1,4 @@
-PACKAGE_VERSION = 1.5.0~b3
+PACKAGE_VERSION = 1.5.1
 
 ifeq ($(SIMULATOR),1)
 	TARGET = simulator:clang:latest:12.0
@@ -7,7 +7,8 @@ else
 	ifeq ($(THEOS_PACKAGE_SCHEME),rootless)
 		TARGET = iphone:clang:latest:14.0
 	else
-		TARGET = iphone:clang:latest:12.0
+		export PREFIX = $(THEOS)/toolchain/Xcode11.xctoolchain/usr/bin/
+		TARGET = iphone:clang:14.5:12.0
 	endif
 endif
 

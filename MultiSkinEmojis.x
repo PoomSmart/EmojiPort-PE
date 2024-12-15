@@ -1,14 +1,16 @@
 #import <PSHeader/iOSVersions.h>
 #import <PSHeader/Misc.h>
-#import <dlfcn.h>
 #import <EmojiLibrary/PSEmojiUtilities.h>
 #import <EmojiLibrary/EmojiUIKit/EmojiUIKit.h>
+#if TARGET_OS_SIMULATOR
+#import <dlfcn.h>
+#endif
 
 %hook UIKeyboardEmojiFamilyConfigurationView
 
 %property (retain, nonatomic) NSArray *variantDisplayRows;
 
-%new
+%new(Q@:)
 - (NSUInteger)_silhouetteFromCurrentSelections {
     NSMutableArray *indices = [self selectedVariantIndices];
     NSInteger first = [[indices firstObject] integerValue];
@@ -30,13 +32,13 @@
     NSArray <NSArray <NSString *> *> *rows = [SoftPSEmojiUtilities skinToneChooserVariantsForString:baseEmojiString];
     NSMutableArray <NSMutableArray <NSString *> *> *array = [NSMutableArray array];
     for (NSArray <NSString *> *row in rows) {
-        NSMutableArray *brray = [NSMutableArray array];
+        NSMutableArray *specifierPairs = [NSMutableArray array];
         for (NSString *variant in row) {
             NSArray <NSString *> *specifiers = [SoftPSEmojiUtilities skinToneSpecifiersForString:variant];
             NSString *specifier = [specifiers firstObject];
-            [brray addObject:@[specifier, specifier]];
+            [specifierPairs addObject:@[specifier, specifier]];
         }
-        [array addObject:brray];
+        [array addObject:specifierPairs];
     }
     self.baseEmojiString = baseEmojiString;
     self.skinToneVariantRows = array;
@@ -81,7 +83,7 @@
 
 %hook UIKeyboardEmojiWellView
 
-%new
+%new(v@:@Q)
 - (void)setStringRepresentation:(NSString *)representation silhouette:(NSUInteger)silhouette {
     [self setValue:representation forKey:@"_stringRepresentation"];
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectZero];
@@ -92,7 +94,7 @@
     self.wellContentView = label;
 }
 
-%new
+%new(@@:Qd)
 - (UIFont *)fontUsingSilhouette:(NSUInteger)silhouette size:(CGFloat)size {
     NSArray <NSDictionary *> *arrayFontAttributes = nil;
     if (silhouette == 1) {
