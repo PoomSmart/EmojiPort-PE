@@ -10,7 +10,7 @@
 
 %property (retain, nonatomic) NSArray *variantDisplayRows;
 
-%new(Q@:)
+%new(L@:)
 - (NSUInteger)_silhouetteFromCurrentSelections {
     NSMutableArray *indices = [self selectedVariantIndices];
     NSInteger first = [[indices firstObject] integerValue];
@@ -83,7 +83,7 @@
 
 %hook UIKeyboardEmojiWellView
 
-%new(v@:@Q)
+%new(v@:@L)
 - (void)setStringRepresentation:(NSString *)representation silhouette:(NSUInteger)silhouette {
     [self setValue:representation forKey:@"_stringRepresentation"];
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectZero];
@@ -94,7 +94,7 @@
     self.wellContentView = label;
 }
 
-%new(@@:Qd)
+%new(@@:Ld)
 - (UIFont *)fontUsingSilhouette:(NSUInteger)silhouette size:(CGFloat)size {
     NSArray <NSDictionary *> *arrayFontAttributes = nil;
     if (silhouette == 1) {

@@ -1,11 +1,11 @@
-PACKAGE_VERSION = 1.5.1
+PACKAGE_VERSION = 1.5.2
 
 ifeq ($(SIMULATOR),1)
 	TARGET = simulator:clang:latest:12.0
-	ARCHS = x86_64
+	ARCHS = arm64 x86_64
 else
 	ifeq ($(THEOS_PACKAGE_SCHEME),rootless)
-		TARGET = iphone:clang:latest:14.0
+		TARGET = iphone:clang:latest:15.0
 	else
 		export PREFIX = $(THEOS)/toolchain/Xcode11.xctoolchain/usr/bin/
 		TARGET = iphone:clang:14.5:12.0
@@ -17,7 +17,10 @@ include $(THEOS)/makefiles/common.mk
 TWEAK_NAME = EmojiPortPE
 
 LIBRARY_NAME = EmojiPortPEReal
-$(LIBRARY_NAME)_FILES = TweakReal.x FamilyPicker.x MultiSkinEmojis.x
+$(LIBRARY_NAME)_FILES = TweakReal.x
+ifneq ($(THEOS_PACKAGE_SCHEME),rootless)
+$(LIBRARY_NAME)_FILES += FamilyPicker.x MultiSkinEmojis.x
+endif
 $(LIBRARY_NAME)_CFLAGS = -fobjc-arc
 $(LIBRARY_NAME)_INSTALL_PATH = /Library/MobileSubstrate/DynamicLibraries/EmojiPort
 $(LIBRARY_NAME)_EXTRA_FRAMEWORKS = CydiaSubstrate
