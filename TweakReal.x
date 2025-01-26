@@ -297,12 +297,18 @@ static CFURLRef getRedirectedUrl(CFURLRef url, CFStringRef const resourceName, C
     CFStringRef absoluteString_ = CFURLGetString(absoluteUrl);
     CFMutableStringRef absoluteString = CFStringCreateMutableCopy(kCFAllocatorDefault, CFStringGetLength(absoluteString_), absoluteString_);
     CFRelease(absoluteString_);
-    CFStringFindAndReplace(
-        absoluteString,
-        CFSTR("/System/Library/PrivateFrameworks/CoreEmoji.framework"),
-        CFSTR("/var/jb/System/Library/PrivateFrameworks/CoreEmoji.framework"),
-        CFRangeMake(0, CFStringGetLength(absoluteString)),
-        0);
+    const char *frameworkPath = "/System/Library/PrivateFrameworks/CoreEmoji.framework";
+    const char *realFrameworkPath = PS_ROOT_PATH(frameworkPath);
+    if (strcmp(realFrameworkPath, frameworkPath)) {
+        CFStringRef newFrameworkPath = CFStringCreateWithCString(kCFAllocatorDefault, realFrameworkPath, kCFStringEncodingUTF8);
+        CFStringFindAndReplace(
+            absoluteString,
+            CFSTR("/System/Library/PrivateFrameworks/CoreEmoji.framework"),
+            newFrameworkPath,
+            CFRangeMake(0, CFStringGetLength(absoluteString)),
+            0);
+        CFRelease(newFrameworkPath);
+    }
     BOOL freeFlag = NO;
     CFStringRef newResourceName = overrideResourceName(resourceName, resourceType, folder, &freeFlag);
     CFStringFindAndReplace(
