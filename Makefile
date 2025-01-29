@@ -4,11 +4,13 @@ ifeq ($(SIMULATOR),1)
 	TARGET = simulator:clang:latest:12.0
 	ARCHS = arm64 x86_64
 else
-	ifeq ($(THEOS_PACKAGE_SCHEME),rootful)
-		export PREFIX = $(THEOS)/toolchain/Xcode11.xctoolchain/usr/bin/
-		TARGET = iphone:clang:14.5:12.0
-	else
+	ifeq ($(THEOS_PACKAGE_SCHEME),rootless)
 		TARGET = iphone:clang:latest:15.0
+	else ifeq ($(THEOS_PACKAGE_SCHEME),roothide)
+		TARGET = iphone:clang:latest:15.0
+	else
+		TARGET = iphone:clang:14.5:12.0
+		export PREFIX = $(THEOS)/toolchain/Xcode11.xctoolchain/usr/bin/
 	endif
 endif
 
