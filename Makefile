@@ -20,7 +20,7 @@ TWEAK_NAME = EmojiPortPE
 
 LIBRARY_NAME = EmojiPortPEReal
 $(LIBRARY_NAME)_FILES = TweakReal.x
-ifneq ($(THEOS_PACKAGE_SCHEME),rootless)
+ifeq ($(THEOS_PACKAGE_SCHEME),)
 $(LIBRARY_NAME)_FILES += FamilyPicker.x MultiSkinEmojis.x
 endif
 $(LIBRARY_NAME)_CFLAGS = -fobjc-arc
