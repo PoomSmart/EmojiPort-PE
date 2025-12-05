@@ -46,12 +46,34 @@ static NSString *overrideResourceNameNS(NSString *resourceName, NSString *subdir
         ? [resourceName stringByAppendingString:@"2"] : resourceName;
 }
 
+static BOOL inNSBundleHook = NO;
+
 %group EMF
 
 %hook NSBundle
 
 - (NSURL *)URLForResource:(NSString *)resourceName withExtension:(NSString *)extension subdirectory:(NSString *)subdirectory {
+    if (inNSBundleHook)
+        return %orig;
     NSString *newResourceName = overrideResourceNameNS(resourceName, subdirectory);
+    const char *frameworkPath = "/System/Library/PrivateFrameworks/CoreEmoji.framework";
+    const char *realFrameworkPath = PS_ROOT_PATH(frameworkPath);
+    BOOL isRootless = strcmp(realFrameworkPath, frameworkPath) != 0;
+    if (isRootless) {
+        NSString *bundlePath = [self bundlePath];
+        if ([bundlePath isEqualToString:@(frameworkPath)]) {
+            NSBundle *coreEmojiBundle = [NSBundle bundleWithPath:@(realFrameworkPath)];
+            if (coreEmojiBundle) {
+                inNSBundleHook = YES;
+                NSURL *url = [coreEmojiBundle URLForResource:newResourceName withExtension:extension subdirectory:subdirectory];
+                if (!url)
+                    url = [coreEmojiBundle URLForResource:resourceName withExtension:extension subdirectory:subdirectory];
+                inNSBundleHook = NO;
+                if (url)
+                    return url;
+            }
+        }
+    }
     NSURL *url = %orig(newResourceName, extension, subdirectory);
     return url ?: %orig;
 }
@@ -277,9 +299,14 @@ static CFStringRef overrideResourceName(CFStringRef const resourceName, CFString
     BOOL byFolder = folder && (CFStringEqual(folder, CFSTR("SearchEngineOverrideLists")) || CFStringEqual(folder, CFSTR("SearchModel-en")));
     *freeFlag = NO;
     if (gate && (byName || byExtension || byFolder)) {
-        if (CFStringEqual(resourceName, CFSTR("emojimeta")))
-            newResourceName = (CFMutableStringRef)(IS_IOS_OR_NEWER(iOS_12_1) ? CFSTR("emojimeta_2") : CFSTR("emojimeta_1"));
-        else if (CFStringEqual(resourceName, CFSTR("Emoticons")))
+        if (CFStringEqual(resourceName, CFSTR("emojimeta"))) {
+            if (IS_IOS_OR_NEWER(iOS_17_0))
+                newResourceName = (CFMutableStringRef)CFSTR("emojimeta_3");
+            else if (IS_IOS_OR_NEWER(iOS_12_1))
+                newResourceName = (CFMutableStringRef)CFSTR("emojimeta_2");
+            else
+                newResourceName = (CFMutableStringRef)CFSTR("emojimeta_1");
+        } else if (CFStringEqual(resourceName, CFSTR("Emoticons")))
             newResourceName = (CFMutableStringRef)(IS_IOS_OR_NEWER(iOS_17_0) ? CFSTR("Emoticons2") : resourceName);
         else {
             newResourceName = CFStringCreateMutableCopy(kCFAllocatorDefault, CFStringGetLength(resourceName), resourceName);
@@ -300,19 +327,17 @@ static CFURLRef getRedirectedUrl(CFURLRef url, CFStringRef const resourceName, C
     CFStringRef absoluteString_ = CFURLGetString(absoluteUrl);
     CFMutableStringRef absoluteString = CFStringCreateMutableCopy(kCFAllocatorDefault, CFStringGetLength(absoluteString_), absoluteString_);
     CFRelease(absoluteString_);
-    if (!IS_IOS_OR_NEWER(iOS_17_0)) {
-        const char *frameworkPath = "/System/Library/PrivateFrameworks/CoreEmoji.framework";
-        const char *realFrameworkPath = PS_ROOT_PATH(frameworkPath);
-        if (strcmp(realFrameworkPath, frameworkPath)) {
-            CFStringRef newFrameworkPath = CFStringCreateWithCString(kCFAllocatorDefault, realFrameworkPath, kCFStringEncodingUTF8);
-            CFStringFindAndReplace(
-                absoluteString,
-                CFSTR("/System/Library/PrivateFrameworks/CoreEmoji.framework"),
-                newFrameworkPath,
-                CFRangeMake(0, CFStringGetLength(absoluteString)),
-                0);
-            CFRelease(newFrameworkPath);
-        }
+    const char *frameworkPath = "/System/Library/PrivateFrameworks/CoreEmoji.framework";
+    const char *realFrameworkPath = PS_ROOT_PATH(frameworkPath);
+    if (strcmp(realFrameworkPath, frameworkPath)) {
+        CFStringRef newFrameworkPath = CFStringCreateWithCString(kCFAllocatorDefault, realFrameworkPath, kCFStringEncodingUTF8);
+        CFStringFindAndReplace(
+            absoluteString,
+            CFSTR("/System/Library/PrivateFrameworks/CoreEmoji.framework"),
+            newFrameworkPath,
+            CFRangeMake(0, CFStringGetLength(absoluteString)),
+            0);
+        CFRelease(newFrameworkPath);
     }
     BOOL freeFlag = NO;
     CFStringRef newResourceName = overrideResourceName(resourceName, resourceType, folder, &freeFlag);
@@ -351,44 +376,9 @@ static CFURLRef getRedirectedUrl(CFURLRef url, CFStringRef const resourceName, C
     CFURLRef url = %orig(newResourceName, resourceType, folder, locale);
     if (freeFlag && newResourceName)
         CFRelease(newResourceName);
-    CFURLRef newUrl = url ?: getRedirectedUrl(%orig, resourceName, resourceType, folder);
+    CFURLRef newUrl = url ?: getRedirectedUrl(%orig(resourceName, resourceType, folder, locale), resourceName, resourceType, folder);
+    HBLogDebug(@"copyResourceURLFromFrameworkBundle2 Final URL: %@ (%@: %@ %@ %@)", newUrl, url, resourceName, resourceType, folder);
     return newUrl;
-}
-
-%end
-
-%group CoreEmoji_Bundle3
-
-%hookf(CFBundleRef, CFBundleCreate, CFAllocatorRef allocator, CFURLRef bundleURL) {
-    CFStringRef bundlePath = CFURLGetString(bundleURL);
-    if (CFStringEqual(bundlePath, CFSTR("file:////System/Library/PrivateFrameworks/CoreEmoji.framework/"))) {
-        CFURLRef absoluteUrl = CFURLCopyAbsoluteURL(bundleURL);
-        if (!absoluteUrl) return %orig;
-        CFStringRef absoluteString_ = CFURLGetString(absoluteUrl);
-        CFMutableStringRef absoluteString = CFStringCreateMutableCopy(kCFAllocatorDefault, CFStringGetLength(absoluteString_), absoluteString_);
-        CFRelease(absoluteString_);
-        const char *frameworkPath = "/System/Library/PrivateFrameworks/CoreEmoji.framework";
-        const char *realFrameworkPath = PS_ROOT_PATH(frameworkPath);
-        if (strcmp(realFrameworkPath, frameworkPath)) {
-            CFMutableStringRef myFrameworkPath = CFStringCreateMutable(kCFAllocatorDefault, 0);
-            CFStringAppend(myFrameworkPath, CFSTR("/"));
-            CFStringRef newFrameworkPath = CFStringCreateWithCString(kCFAllocatorDefault, realFrameworkPath, kCFStringEncodingUTF8);
-            CFStringFindAndReplace(
-                absoluteString,
-                CFSTR("/System/Library/PrivateFrameworks/CoreEmoji.framework"),
-                newFrameworkPath,
-                CFRangeMake(0, CFStringGetLength(absoluteString)),
-                0);
-            CFStringAppend(myFrameworkPath, newFrameworkPath);
-            CFURLRef redirectedUrl = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, myFrameworkPath, kCFURLPOSIXPathStyle, true);
-            CFRelease(newFrameworkPath);
-            CFRelease(myFrameworkPath);
-            CFRelease(absoluteString);
-            CFRelease(absoluteUrl);
-            return %orig(allocator, redirectedUrl);
-        }
-    }
-    return %orig;
 }
 
 %end
@@ -403,16 +393,15 @@ static CFURLRef getRedirectedUrl(CFURLRef url, CFStringRef const resourceName, C
     MSImageRef ref = MSGetImageByName(coreEmoji);
     CFURLRef (*copyResourceURLFromFrameworkBundle_p)(CFStringRef const, CFStringRef const, CFLocaleRef const) = NULL;
     copyResourceURLFromFrameworkBundle_p = (typeof(copyResourceURLFromFrameworkBundle_p))MSFindSymbol(ref, "__ZN3CEM34copyResourceURLFromFrameworkBundleEPK10__CFStringS2_PK10__CFLocale");
+    HBLogDebug(@"copyResourceURLFromFrameworkBundle_p: %d", copyResourceURLFromFrameworkBundle_p != NULL);
     if (copyResourceURLFromFrameworkBundle_p) {
         %init(CoreEmoji_Bundle, copyResourceURLFromFrameworkBundle = (void *)copyResourceURLFromFrameworkBundle_p);
     }
     CFURLRef (*copyResourceURLFromFrameworkBundle2_p)(CFStringRef const, CFStringRef const, CFStringRef const, CFLocaleRef const) = NULL;
     copyResourceURLFromFrameworkBundle2_p = (typeof(copyResourceURLFromFrameworkBundle2_p))MSFindSymbol(ref, "__ZN3CEM34copyResourceURLFromFrameworkBundleEPK10__CFStringS2_S2_PK10__CFLocale");
+    HBLogDebug(@"copyResourceURLFromFrameworkBundle2_p: %d", copyResourceURLFromFrameworkBundle2_p != NULL);
     if (copyResourceURLFromFrameworkBundle2_p) {
         %init(CoreEmoji_Bundle2, copyResourceURLFromFrameworkBundle2 = (void *)copyResourceURLFromFrameworkBundle2_p);
-    }
-    if (IS_IOS_OR_NEWER(iOS_17_0)) {
-        %init(CoreEmoji_Bundle3);
     }
     NSString *processName = [[NSProcessInfo processInfo] processName];
     BOOL kbd = [processName isEqualToString:@"kbd"];
