@@ -1,4 +1,4 @@
-PACKAGE_VERSION = 1.6.1
+PACKAGE_VERSION = 1.6.2
 
 ifeq ($(SIMULATOR),1)
 	TARGET = simulator:clang:latest:12.0
@@ -23,7 +23,10 @@ $(LIBRARY_NAME)_FILES = TweakReal.x
 ifeq ($(THEOS_PACKAGE_SCHEME),)
 $(LIBRARY_NAME)_FILES += FamilyPicker.x MultiSkinEmojis.x
 endif
-$(LIBRARY_NAME)_CFLAGS = -fobjc-arc
+ifeq ($(INCLUDE_EML),1)
+$(LIBRARY_NAME)_FILES += $(wildcard ../EmojiLibrary/PSEmojiUtilities*.m)
+endif
+$(LIBRARY_NAME)_CFLAGS = -fobjc-arc -DINCLUDE_EML=$(INCLUDE_EML)
 $(LIBRARY_NAME)_INSTALL_PATH = /Library/MobileSubstrate/DynamicLibraries/EmojiPort
 $(LIBRARY_NAME)_EXTRA_FRAMEWORKS = CydiaSubstrate
 $(LIBRARY_NAME)_USE_SUBSTRATE = 1

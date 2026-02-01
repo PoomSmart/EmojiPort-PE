@@ -385,7 +385,9 @@ static CFURLRef getRedirectedUrl(CFURLRef url, CFStringRef const resourceName, C
 
 %ctor {
 #if TARGET_OS_SIMULATOR
+#if !defined(INCLUDE_EML) || INCLUDE_EML != 1
     dlopen(realPath2(@"/usr/lib/libEmojiLibrary.dylib"), RTLD_NOW);
+#endif
 #endif
     const char *coreEmoji = realPath2(@"/System/Library/PrivateFrameworks/CoreEmoji.framework/CoreEmoji");
     dlopen(coreEmoji, RTLD_NOW);
