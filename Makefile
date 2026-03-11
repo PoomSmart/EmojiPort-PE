@@ -1,5 +1,3 @@
-PACKAGE_VERSION = 1.6.2
-
 ifeq ($(SIMULATOR),1)
 	TARGET = simulator:clang:latest:12.0
 	ARCHS = arm64 x86_64
