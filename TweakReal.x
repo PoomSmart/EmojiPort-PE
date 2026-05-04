@@ -262,6 +262,10 @@ static BOOL inNSBundleHook = NO;
     return [SoftPSEmojiUtilities skinToneChooserArraysForCoupleType:coupleType joiner:joiner];
 }
 
++ (NSArray <NSArray <NSString *> *> *)_coupleSkinToneChooserVariantsForString:(NSString *)string {
+    return [SoftPSEmojiUtilities coupleSkinToneChooserVariantsForString:string];
+}
+
 + (NSArray <NSString *> *)_tokenizedMultiPersonFromString:(NSString *)emojiString {
     return [SoftPSEmojiUtilities tokenizedMultiPersonFromString:emojiString];
 }
@@ -276,6 +280,10 @@ static BOOL inNSBundleHook = NO;
 
 - (BOOL)supportsSkinToneVariants {
     return [SoftPSEmojiUtilities hasSkinToneVariants:[self valueForKey:@"_string"]];
+}
+
+- (BOOL)isNewEmoji {
+    return NO;
 }
 
 %end
@@ -307,10 +315,10 @@ static CFStringRef overrideResourceName(CFStringRef const resourceName, CFString
             else
                 newResourceName = (CFMutableStringRef)CFSTR("emojimeta_1");
         } else if (CFStringEqual(resourceName, CFSTR("Emoticons")))
-            newResourceName = (CFMutableStringRef)(IS_IOS_OR_NEWER(iOS_17_0) ? CFSTR("Emoticons2") : resourceName);
+            newResourceName = (CFMutableStringRef)(IS_IOS_OR_NEWER(iOS_17_0) ? CFSTR("Emoticons2") : CFSTR("Emoticons_16"));
         else {
             newResourceName = CFStringCreateMutableCopy(kCFAllocatorDefault, CFStringGetLength(resourceName), resourceName);
-            if (CFStringEqual(resourceName, CFSTR("FindReplace")) || CFStringEqual(resourceName, CFSTR("FindReplace-en")) || CFStringEqual(resourceName, CFSTR("CharacterPicker")))
+            if (CFStringEqual(resourceName, CFSTR("FindReplace")) || CFStringEqual(resourceName, CFSTR("FindReplace-en")) || CFStringEqual(resourceName, CFSTR("CharacterPicker")) || CFStringEqual(resourceName, CFSTR("LocaleData")))
                 CFStringAppend(newResourceName, IS_IOS_OR_NEWER(iOS_17_0) ? CFSTR("2") : CFSTR("_16"));
             else
                 CFStringAppend(newResourceName, CFSTR("2"));
