@@ -358,6 +358,8 @@ static CFURLRef getRedirectedUrl(CFURLRef url, CFStringRef const resourceName, C
     if (freeFlag && newResourceName)
         CFRelease(newResourceName);
     CFURLRef redirectedUrl = CFURLCreateWithString(kCFAllocatorDefault, absoluteString, NULL);
+    CFRelease(absoluteString);
+    CFRelease(url);
     HBLogDebug(@"New URL: %@", redirectedUrl);
     return redirectedUrl;
 }

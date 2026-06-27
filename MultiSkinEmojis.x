@@ -52,6 +52,11 @@
 }
 
 - (void)_configureFamilyMemberWellStackViews {
+    for (UIStackView *stack in self.familyMemberStackViews) {
+        [stack removeFromSuperview];
+    }
+    [self.familyMemberStackViews removeAllObjects];
+
     if (self.baseEmojiString) {
         NSInteger section = 0;
         Class UIKeyboardEmojiWellViewClass = %c(UIKeyboardEmojiWellView);
